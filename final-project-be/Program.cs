@@ -10,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<CategoryDataAccess>();
+builder.Services.AddScoped<CourseDataAccess>();
 
 var app = builder.Build();
 
