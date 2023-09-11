@@ -6,5 +6,5 @@
 
 ## Screenshots Database Structure
 
-![App Screenshot](https://live.staticflickr.com/65535/53179941255_584e04778e_n.jpg)
+![App Screenshot](https://live.staticflickr.com/65535/53179511286_f45d526863_w.jpg)
 
