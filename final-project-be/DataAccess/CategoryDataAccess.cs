@@ -6,7 +6,15 @@ namespace final_project_be.DataAccess
 {
     public class CategoryDataAccess
     {
-        private readonly string _connectionString = "server=localhost;port=3306;database=final-project;user=root;password=";
+        // private readonly string _connectionString = "server=localhost;port=3306;database=final-project;user=root;password=";
+
+        private readonly string _connectionString; 
+        private readonly IConfiguration _configuration;
+        public CategoryDataAccess(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+        }
 
 
         /*Get all data*/
@@ -20,24 +28,32 @@ namespace final_project_be.DataAccess
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    try
                     {
-                        while (reader.Read())
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            categories.Add(new Category
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Img = reader["Img"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty
-                            });
+                                categories.Add(new Category
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Img = reader["Img"].ToString() ?? string.Empty,
+                                    Description = reader["Description"].ToString() ?? string.Empty
+                                });
+                            }
                         }
                     }
-
-                    connection.Close();
-
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
             }
 
@@ -50,29 +66,45 @@ namespace final_project_be.DataAccess
         {
             Category? category = null;
 
-            string query = $"SELECT * FROM categories WHERE Id = '{id}'";
+            string query = $"SELECT * FROM categories WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    try
                     {
-                        while (reader.Read())
+                        command.Connection = connection;
+                        command.Parameters.Clear();
+
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@id", id);
+
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            category = new Category
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Img = reader["Img"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty
-                            };
+                                category = new Category
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Img = reader["Img"].ToString() ?? string.Empty,
+                                    Description = reader["Description"].ToString() ?? string.Empty
+                                };
+                            }
                         }
                     }
-
-                    connection.Close();
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
             }
 
@@ -85,20 +117,35 @@ namespace final_project_be.DataAccess
             bool result = false;
 
             string query = $"INSERT INTO categories(id, name, img, description) " +
-               $"VALUES ('{category.Id}','{category.Name}', '{category.Img}', '{category.Description}')";
+               $"VALUES (@id, @name, @img, @description)";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    command.Connection = connection;
-                    command.CommandText = query;
+                    try
+                    {
+                        command.Connection = connection;
+                        command.Parameters.Clear();
 
-                    connection.Open();
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@id", category.Id);
+                        command.Parameters.AddWithValue("@name", category.Name);
+                        command.Parameters.AddWithValue("@img", category.Img);
+                        command.Parameters.AddWithValue("@description", category.Description);
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        connection.Open();
 
-                    connection.Close();
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
             }
 
@@ -112,21 +159,35 @@ namespace final_project_be.DataAccess
 
             
 
-            string query = $"UPDATE categories SET name = '{category.Name}', img = '{category.Img}', description = '{category.Description}' " +
-                $"WHERE id = '{id}'";
+            string query = $"UPDATE categories SET name = @name, img = @img, description = @description WHERE id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    command.Connection = connection;
-                    command.CommandText = query;
+                    try
+                    {
+                        command.Connection = connection;
+                        command.Parameters.Clear();
 
-                    connection.Open();
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@name", category.Name);
+                        command.Parameters.AddWithValue("@img", category.Img);
+                        command.Parameters.AddWithValue("@description", category.Description);
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        connection.Open();
 
-                    connection.Close();
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
             }
 
@@ -138,25 +199,39 @@ namespace final_project_be.DataAccess
         {
             bool result = false;
 
-            string query = $"DELETE FROM categories WHERE id = '{id}'";
+            string query = $"DELETE FROM categories WHERE id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    command.Connection = connection;
-                    command.CommandText = query;
+                    try
+                    {
+                        command.Connection = connection;
+                        command.Parameters.Clear();
 
-                    connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@id", id);
 
-                    connection.Close();
+                        connection.Open();
+
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
             }
 
             return result;
         }
+
 
 
     }
