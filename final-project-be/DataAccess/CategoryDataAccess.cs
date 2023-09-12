@@ -6,7 +6,15 @@ namespace final_project_be.DataAccess
 {
     public class CategoryDataAccess
     {
-        private readonly string _connectionString = "server=localhost;port=3306;database=final-project;user=root;password=";
+        // private readonly string _connectionString = "server=localhost;port=3306;database=final-project;user=root;password=";
+
+        private readonly string _connectionString; 
+        private readonly IConfiguration _configuration;
+        public CategoryDataAccess(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+        }
 
 
         /*Get all data*/
@@ -50,12 +58,19 @@ namespace final_project_be.DataAccess
         {
             Category? category = null;
 
-            string query = $"SELECT * FROM categories WHERE Id = '{id}'";
+            string query = $"SELECT * FROM categories WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+                    command.Connection = connection;
+                    command.Parameters.Clear();
+
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("@id", id);
+
+
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -85,14 +100,20 @@ namespace final_project_be.DataAccess
             bool result = false;
 
             string query = $"INSERT INTO categories(id, name, img, description) " +
-               $"VALUES ('{category.Id}','{category.Name}', '{category.Img}', '{category.Description}')";
+               $"VALUES (@id, @name, @img, @description)";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Connection = connection;
+                    command.Parameters.Clear();
+
                     command.CommandText = query;
+                    command.Parameters.AddWithValue("@id", category.Id);
+                    command.Parameters.AddWithValue("@name", category.Name);
+                    command.Parameters.AddWithValue("@img", category.Img);
+                    command.Parameters.AddWithValue("@description", category.Description);
 
                     connection.Open();
 
@@ -157,6 +178,7 @@ namespace final_project_be.DataAccess
 
             return result;
         }
+
 
 
     }

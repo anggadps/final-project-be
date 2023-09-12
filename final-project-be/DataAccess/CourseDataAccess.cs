@@ -5,7 +5,18 @@ namespace final_project_be.DataAccess
 {
     public class CourseDataAccess
     {
-        private readonly string _connectionString = "server=localhost;port=3306;database=final-project;user=root;password=";
+        // private readonly string _connectionString = "server=localhost;port=3306;database=final-project;user=root;password=";
+
+
+        private readonly string _connectionString;
+        private readonly IConfiguration _configuration;
+        public CourseDataAccess(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _connectionString = _configuration.GetConnectionString("DefaultConnection");
+        }
+
+
         // get all
         public List<Course> GetAll()
         {
@@ -47,12 +58,19 @@ namespace final_project_be.DataAccess
         {
             Course? course = null;
 
-            string query = $"SELECT * FROM courses WHERE Id = '{id}'";
+            string query = $"SELECT * FROM courses WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+
+                    command.Connection = connection;
+                    command.Parameters.Clear();
+
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("@id", id);
+
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -82,13 +100,23 @@ namespace final_project_be.DataAccess
         public bool Insert(Course course)
         {
             bool result = false;
-            string query = $"INSERT INTO courses (Id, Name, Price, TypeCourse, Img) VALUES ('{course.Id}', '{course.Name}', '{course.Price}', '{course.TypeCourse}', '{course.Img}')";
+            string query = $"INSERT INTO courses (Id, Name, Price, TypeCourse, Img) VALUES (@id, @name, @price, @typecourse, @img)";
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Connection = connection;
+                    command.Parameters.Clear();
+
+
                     command.CommandText = query;
+                    command.Parameters.AddWithValue("@id", course.Id);
+                    command.Parameters.AddWithValue("@name", course.Name);
+                    command.Parameters.AddWithValue("@price", course.Price);
+                    command.Parameters.AddWithValue("@typecourse", course.TypeCourse);
+                    command.Parameters.AddWithValue("@img", course.Img);
+
+
                     connection.Open();
                     result = command.ExecuteNonQuery() > 0 ? true : false;
                     connection.Close();
