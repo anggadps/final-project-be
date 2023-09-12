@@ -11,6 +11,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<CategoryDataAccess>();
 builder.Services.AddScoped<CourseDataAccess>();
+builder.Services.AddScoped<UserDataAccess>();
+builder.Services.AddScoped<OrderDataAccess>();
+builder.Services.AddScoped<InvoiceDataAccess>();
+
 
 var app = builder.Build();
 

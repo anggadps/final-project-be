@@ -24,9 +24,23 @@ namespace final_project_be.Controllers
 
         // get by id
         [HttpGet("GetById")]
-        public IActionResult Get(Guid id)
+        public IActionResult GetById(Guid id)
         {
             Course? course = _courseDataAccess.GetById(id);
+
+            if (course == null)
+            {
+                return NotFound("Data not found");
+            }
+
+            return Ok(course);
+        }
+
+        // get by name
+        [HttpGet("GetByName")]
+        public IActionResult GetByName(string name)
+        {
+            Course? course = _courseDataAccess.GetByName(name);
 
             if (course == null)
             {
