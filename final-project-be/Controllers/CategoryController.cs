@@ -104,9 +104,5 @@ namespace final_project_be.Controllers
                 return StatusCode(500, "Error occur");
             }
         }
-
-
-
-
     }
 }
