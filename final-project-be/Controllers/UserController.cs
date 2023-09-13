@@ -7,9 +7,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace final_project_be.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
 
@@ -18,12 +20,14 @@ namespace final_project_be.Controllers
     {
         private readonly UserDataAccess _userDataAccess;
         private readonly IConfiguration _configuration;
+
         public UserController(UserDataAccess userDataAccess, IConfiguration configuration)
         {
             _userDataAccess = userDataAccess;
             _configuration = configuration;
         }
 
+        
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -31,6 +35,7 @@ namespace final_project_be.Controllers
             return Ok(users);
         }
 
+        [Authorize(Roles = "admin")]
         // insert user
         [HttpPost("CreateUser")]
         public IActionResult CreateUser([FromBody] UserDTO userDTO)
@@ -49,7 +54,7 @@ namespace final_project_be.Controllers
                     Name = userDTO.Name,
                     Email = userDTO.Email,
                     Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password),
-                    id_user_level = userLevel.Id
+                    Id_user_level = userLevel.Id
                 };
 
                 bool result = _userDataAccess.CreateUserAccount(user, userLevel);
@@ -74,6 +79,8 @@ namespace final_project_be.Controllers
         [HttpPost("Login")]
         public IActionResult Login([FromBody] LoginRequestDTO credential)
         {
+
+
             if (credential == null)
                 return BadRequest("Data should be inputed");
 
@@ -81,13 +88,17 @@ namespace final_project_be.Controllers
                 return BadRequest("Email or Password should be inputed");
 
             User? user = _userDataAccess.CheckUser(credential.Email);
+            
 
             if (user == null)
                 return BadRequest("Email or Password is incorrectttt");
 
-
+            
 
             bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
+
+            UserLevel? userLevel = _userDataAccess.GetUserLevel(user.Id_user_level);
+
 
             if (!isVerified)
             {
@@ -101,6 +112,7 @@ namespace final_project_be.Controllers
                 var claims = new Claim[]
                 {
                     new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, userLevel.Name)
                 };
 
                 var signingCredential = new SigningCredentials(
@@ -129,6 +141,7 @@ namespace final_project_be.Controllers
 
 
         // update user
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public IActionResult Put(Guid id, [FromBody] UserDTO userDto)
         {
@@ -156,6 +169,7 @@ namespace final_project_be.Controllers
         }
 
         // delete user
+        [Authorize(Roles = "admin")]
         [HttpDelete]
         public IActionResult Delete(Guid id)
         {
