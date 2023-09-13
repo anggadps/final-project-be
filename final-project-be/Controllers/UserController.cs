@@ -1,19 +1,27 @@
 using final_project_be.DataAccess;
 using final_project_be.Models;
 using final_project_be.DTOs.User;
+using final_project_be.DTOs.UserLevel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace final_project_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
 
+
     public class UserController : ControllerBase
     {
         private readonly UserDataAccess _userDataAccess;
-        public UserController(UserDataAccess userDataAccess)
+        private readonly IConfiguration _configuration;
+        public UserController(UserDataAccess userDataAccess, IConfiguration configuration)
         {
             _userDataAccess = userDataAccess;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -24,31 +32,101 @@ namespace final_project_be.Controllers
         }
 
         // insert user
-        [HttpPost]
-        public IActionResult Post([FromBody] UserDTO userDto)
+        [HttpPost("CreateUser")]
+        public IActionResult CreateUser([FromBody] UserDTO userDTO)
         {
-            if (userDto == null)
+            try
+            {
+                UserLevel userLevel = new UserLevel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = userDTO.UserLevel
+                };
+
+                User user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Name = userDTO.Name,
+                    Email = userDTO.Email,
+                    Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password),
+                    id_user_level = userLevel.Id
+                };
+
+                bool result = _userDataAccess.CreateUserAccount(user, userLevel);
+
+                if (result)
+                {
+                    return StatusCode(201, userDTO);
+                }
+                else
+                {
+                    return StatusCode(500, "Data Not Created");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+
+        }
+
+        // Login
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] LoginRequestDTO credential)
+        {
+            if (credential == null)
                 return BadRequest("Data should be inputed");
 
-            User user = new User
-            {
-                Name = userDto.Name,
-                Email = userDto.Email,
-                Password = userDto.Password,
-                id_user_level = userDto.id_user_level
-            };
+            if (string.IsNullOrEmpty(credential.Email) || string.IsNullOrEmpty(credential.Password))
+                return BadRequest("Email or Password should be inputed");
 
-            bool result = _userDataAccess.Insert(user);
+            User? user = _userDataAccess.CheckUser(credential.Email);
 
-            if (result)
+            if (user == null)
+                return BadRequest("Email or Password is incorrectttt");
+
+
+
+            bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
+
+            if (!isVerified)
             {
-                return StatusCode(201, user.Id);
+                return BadRequest("Email or Password is incorrectyaa");
             }
             else
             {
-                return StatusCode(500, "Internal server error");
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration.GetSection("JwtConfig:Key").Value));
+
+                var claims = new Claim[]
+                {
+                    new Claim(ClaimTypes.Email, user.Email),
+                };
+
+                var signingCredential = new SigningCredentials(
+                    key, SecurityAlgorithms.HmacSha256Signature);
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddMinutes(10),
+                    SigningCredentials = signingCredential
+                };
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+
+                string token = tokenHandler.WriteToken(securityToken);
+
+                return Ok(new LoginResponseDTO
+                {
+                    Token = token,
+                });
             }
+
         }
+
 
         // update user
         [HttpPut]
@@ -63,7 +141,6 @@ namespace final_project_be.Controllers
                 Name = userDto.Name,
                 Email = userDto.Email,
                 Password = userDto.Password,
-                id_user_level = userDto.id_user_level
             };
 
             bool result = _userDataAccess.Update(id, user);
@@ -93,5 +170,10 @@ namespace final_project_be.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+    }
+
+    internal class LoginResponseDTO
+    {
+        public string Token { get; set; } = string.Empty;
     }
 }

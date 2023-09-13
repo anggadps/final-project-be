@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTOs/User/LoginResponseDTO.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="DTOs/User/LoginResponseDTO.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next.StrongName" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
     <PackageReference Include="MySql.Data" Version="8.1.0" />
