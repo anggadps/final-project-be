@@ -115,12 +115,12 @@ namespace final_project_be.DataAccess
             return result;
         }
 
-        // get by name
-        public User? CheckUser(string Email)
+        // get by email
+        public User? CheckUser(string email)
         {
             User? user = null;
 
-            string query = "SELECT * FROM users WHERE Email = @Email";
+            string query = "SELECT * FROM users WHERE Email = @email";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -128,7 +128,7 @@ namespace final_project_be.DataAccess
                 {
                     try
                     {
-                        command.Parameters.AddWithValue("@Email", Email);
+                        command.Parameters.AddWithValue("@email", email);
 
                         connection.Open();
 
@@ -139,6 +139,7 @@ namespace final_project_be.DataAccess
                                 user = new User
                                 {
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Id_user_level = Guid.Parse(reader["Id_user_level"].ToString() ?? string.Empty),
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Email = reader["Email"].ToString() ?? string.Empty,
                                     Password = reader["Password"].ToString() ?? string.Empty,
@@ -173,7 +174,11 @@ namespace final_project_be.DataAccess
                     command.Connection = connection;
                     command.Parameters.Clear();
 
-                    command.CommandText = "SELECT * FROM user_levels WHERE Id = @Id";
+                    
+                    command.CommandText = "SELECT user_levels.name " +
+                        "FROM users " +
+                        "INNER JOIN user_levels ON users.id_user_level = user_levels.id WHERE user_levels.id = @Id";
+
                     command.Parameters.AddWithValue("@Id", id);
 
                     connection.Open();
@@ -184,7 +189,6 @@ namespace final_project_be.DataAccess
                         {
                             userLevel = new UserLevel
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
                             };
                         }
@@ -197,12 +201,14 @@ namespace final_project_be.DataAccess
             return userLevel;
         }
 
+
+
         // update user
         public bool Update(Guid id, User user)
         {
             bool result = false;
 
-            string query = "UPDATE users SET Name = @Name, Email = @Email, Password = @Password, id_user_level = @id_user_level WHERE Id = @Id";
+            string query = "UPDATE users SET Name = @Name, Email = @Email, Password = @Password, Id_user_level = @Id_user_level WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -218,7 +224,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@Name", user.Name);
                         command.Parameters.AddWithValue("@Email", user.Email);
                         command.Parameters.AddWithValue("@Password", user.Password);
-                        command.Parameters.AddWithValue("@id_user_level", user.id_user_level);
+                        command.Parameters.AddWithValue("@Id_user_level", user.Id_user_level);
                         connection.Open();
 
                         result = command.ExecuteNonQuery() > 0 ? true : false;
