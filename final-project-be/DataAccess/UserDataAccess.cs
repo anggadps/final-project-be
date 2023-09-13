@@ -84,12 +84,13 @@ namespace final_project_be.DataAccess
                     command1.Transaction = transaction;
                     command1.Parameters.Clear();
 
-                    command1.CommandText = "INSERT INTO users (Id, id_user_level, Name, Email, Password ) VALUES (@Id, @id_user_level, @Name, @Email, @Password )";
+                    command1.CommandText = "INSERT INTO users (Id, id_user_level, Name, Email, Password, IsActivated ) VALUES (@Id, @id_user_level, @Name, @Email, @Password, @IsActivated )";
                     command1.Parameters.AddWithValue("@Id", user.Id);
                     command1.Parameters.AddWithValue("@id_user_level", userLevel.Id);
                     command1.Parameters.AddWithValue("@Name", user.Name);
                     command1.Parameters.AddWithValue("@Email", user.Email);
                     command1.Parameters.AddWithValue("@Password", user.Password);
+                    command1.Parameters.AddWithValue("@IsActivated", user.IsActivated);
 
 
 
@@ -196,6 +197,37 @@ namespace final_project_be.DataAccess
 
             return userLevel;
         }
+
+        // activate user
+        public bool AcitvateUser(Guid id)
+        {
+            bool result = false;
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                MySqlCommand command = new MySqlCommand();
+                command.Connection = connection;
+                command.Parameters.Clear();
+
+                command.CommandText = "UPDATE users SET IsActivated = 1 WHERE Id = @id";
+                command.Parameters.AddWithValue("@id", id);
+
+                try
+                {
+                    connection.Open();
+
+                    result = command.ExecuteNonQuery() > 0;
+                }
+                catch
+                {
+                    throw;
+                }
+                finally { connection.Close(); }
+            }
+
+            return result;
+        }
+
 
         // update user
         public bool Update(Guid id, User user)

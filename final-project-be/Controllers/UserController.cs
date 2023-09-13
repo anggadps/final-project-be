@@ -2,11 +2,15 @@ using final_project_be.DataAccess;
 using final_project_be.Models;
 using final_project_be.DTOs.User;
 using final_project_be.DTOs.UserLevel;
+using final_project_be.Emails;
+using final_project_be.Emails.Template;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace final_project_be.Controllers
 {
@@ -18,10 +22,14 @@ namespace final_project_be.Controllers
     {
         private readonly UserDataAccess _userDataAccess;
         private readonly IConfiguration _configuration;
-        public UserController(UserDataAccess userDataAccess, IConfiguration configuration)
+        private readonly EmailService _emailService;
+
+
+        public UserController(UserDataAccess userDataAccess, IConfiguration configuration, EmailService emailService)
         {
             _userDataAccess = userDataAccess;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -33,7 +41,7 @@ namespace final_project_be.Controllers
 
         // insert user
         [HttpPost("CreateUser")]
-        public IActionResult CreateUser([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> CreateUser([FromBody] UserDTO userDTO)
         {
             try
             {
@@ -49,13 +57,15 @@ namespace final_project_be.Controllers
                     Name = userDTO.Name,
                     Email = userDTO.Email,
                     Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password),
-                    id_user_level = userLevel.Id
+                    id_user_level = userLevel.Id,
+                    IsActivated = false
                 };
 
                 bool result = _userDataAccess.CreateUserAccount(user, userLevel);
 
                 if (result)
                 {
+                    bool mailResult = await SendMailActivation(user);
                     return StatusCode(201, userDTO);
                 }
                 else
@@ -126,6 +136,89 @@ namespace final_project_be.Controllers
             }
 
         }
+
+        [HttpGet("ActivateUser")]
+        public IActionResult ActivateUser(Guid userId, string Email)
+        {
+            try
+            {
+                User? user = _userDataAccess.CheckUser(Email);
+
+                if (user == null)
+                    return BadRequest("Activation Failed");
+
+                if (user.IsActivated == true)
+                    return BadRequest("Account has been activated");
+
+                bool result = _userDataAccess.AcitvateUser(userId);
+
+                if (result)
+                    return Ok("User Activated Successfully");
+                else
+                    return BadRequest("Activation Failed");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        // Send mail
+        [HttpPost("SendMailUser")]
+        public async Task<IActionResult> SendMailUser([FromBody] string mailTo)
+        {
+            List<string> to = new List<string>();
+            to.Add(mailTo);
+
+            string subject = "Test Email FS10";
+            string body = "Hallo, First Email";
+
+            EmailModel model = new EmailModel(to, subject, body);
+
+            bool sendMail = await _emailService.SendAsync(model, new CancellationToken());
+
+            if (sendMail)
+                return Ok("Send");
+            else
+                return StatusCode(500, "Error");
+        }
+
+        private async Task<bool> SendMailActivation(User user)
+        {
+            if (user == null)
+                return false;
+
+            if (string.IsNullOrEmpty(user.Email))
+                return false;
+
+            List<string> to = new List<string>();
+            to.Add(user.Email);
+
+            string subject = "Account Activation";
+
+            var param = new Dictionary<string, string>()
+            {
+                {"userId", user.Id.ToString() },
+                { "username", user.Name }
+            };
+
+            string callback = QueryHelpers.AddQueryString("https://localhost:7213/api/User/ActivateUser", param);
+
+            //string body = "Please confirm account by clicking this <a href=\"" + callback + "\"> Link</a>";
+
+            string body = _emailService.GetMailTemplate("EmailActivation", new ActivationModel()
+            {
+                Email = user.Email,
+                Link = callback
+            });
+
+            EmailModel emailModel = new EmailModel(to, subject, body);
+            bool mailResult = await _emailService.SendAsync(emailModel, new CancellationToken());
+
+            return mailResult;
+        }
+
+
 
 
         // update user
