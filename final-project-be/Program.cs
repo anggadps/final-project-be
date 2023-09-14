@@ -1,5 +1,6 @@
 using System.Text;
 using final_project_be.DataAccess;
+using final_project_be.Emails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -45,8 +46,10 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.AddScoped<CategoryDataAccess>();
 builder.Services.AddScoped<CourseDataAccess>();
 builder.Services.AddScoped<UserDataAccess>();
+builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<OrderDataAccess>();
 builder.Services.AddScoped<InvoiceDataAccess>();
+
 
 builder.Services.AddCors();
 
