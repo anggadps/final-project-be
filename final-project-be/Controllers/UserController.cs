@@ -153,6 +153,7 @@ namespace final_project_be.Controllers
                 bool result = _userDataAccess.AcitvateUser(userId);
 
                 if (result)
+
                     return Ok("User Activated Successfully");
                 else
                     return BadRequest("Activation Failed");
@@ -198,13 +199,12 @@ namespace final_project_be.Controllers
 
             var param = new Dictionary<string, string>()
             {
-                {"userId", user.Id.ToString() },
-                { "username", user.Name }
+                {"Id", user.Id.ToString() },
+                { "Email", user.Email }
             };
 
-            string callback = QueryHelpers.AddQueryString("https://localhost:7213/api/User/ActivateUser", param);
+            string callback = QueryHelpers.AddQueryString("https://localhost:7091/api/User/ActivateUser", param);
 
-            //string body = "Please confirm account by clicking this <a href=\"" + callback + "\"> Link</a>";
 
             string body = _emailService.GetMailTemplate("EmailActivation", new ActivationModel()
             {
