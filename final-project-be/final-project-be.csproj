@@ -8,19 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DTOs/User/LoginResponseDTO.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="DTOs/User/LoginResponseDTO.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next.StrongName" Version="4.0.3" />
-    <PackageReference Include="MailKit" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
     <PackageReference Include="MySql.Data" Version="8.1.0" />
-    <PackageReference Include="RazorEngineCore" Version="2022.8.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
   </ItemGroup>
