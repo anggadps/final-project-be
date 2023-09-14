@@ -2,6 +2,7 @@ using final_project_be.DataAccess;
 using final_project_be.Models;
 using final_project_be.DTOs.Course;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace final_project_be.Controllers
 {
@@ -37,6 +38,7 @@ namespace final_project_be.Controllers
         }
 
         // get by name
+        [Authorize]
         [HttpGet("GetByName")]
         public IActionResult GetByName(string name)
         {
@@ -62,7 +64,7 @@ namespace final_project_be.Controllers
                 Id = Guid.NewGuid(),
                 Name = courseDto.Name,
                 Price = courseDto.Price,
-                TypeCourse = courseDto.TypeCourse,
+                id_category = courseDto.id_category,
                 Img = courseDto.Img,
             };
 
@@ -90,7 +92,7 @@ namespace final_project_be.Controllers
                 Id = Guid.NewGuid(),
                 Name = courseDTO.Name,
                 Price = courseDTO.Price,
-                TypeCourse = courseDTO.TypeCourse,
+                id_category = courseDTO.id_category,
                 Img = courseDTO.Img,
             };
 
