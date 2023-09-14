@@ -73,7 +73,7 @@ namespace final_project_be.Controllers
                 if (user == null)
                     return BadRequest("Activation Failed");
 
-                if (user.Is_active == true)
+                if (user.Is_active == 1)
                     return BadRequest("Account has been activated");
 
                 bool result = _userDataAccess.ActivatedUser(userId);
@@ -107,7 +107,7 @@ namespace final_project_be.Controllers
                     Email = userDTO.Email,
                     Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password),
                     Id_user_level = defaultUserLevelId,
-                    Is_active = false,
+                    Is_active = 0,
 
                 };
 
@@ -272,7 +272,7 @@ namespace final_project_be.Controllers
             if (user == null)
                 return BadRequest("Email or Password is incorrectttt");
 
-            if (user.Is_active == false)
+            if (user.Is_active == 0)
             {
                 return Unauthorized("Your Account has not ACTIVATED");
             }

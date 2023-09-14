@@ -167,6 +167,7 @@ namespace final_project_be.DataAccess
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Email = reader["Email"].ToString() ?? string.Empty,
                                     Password = reader["Password"].ToString() ?? string.Empty,
+                                    Is_active = Convert.ToInt32(reader["Is_active"]),
                                 };
                             }
                         }
