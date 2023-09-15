@@ -3,7 +3,6 @@ using MimeKit;
 using RazorEngineCore;
 using System.Text;
 
-
 namespace final_project_be.Emails
 {
     public class EmailService
@@ -50,9 +49,9 @@ namespace final_project_be.Emails
                 body.HtmlBody = mailModel.Body;
                 mail.Body = body.ToMessageBody();
 
-                using var smtp = new System.Net.Mail.SmtpClient();
+                using var smtp = new SmtpClient();
 
-                object value = await smtp.ConnectAsync(_host, _port, true, ct);
+                await smtp.ConnectAsync(_host, _port, true, ct);
 
                 await smtp.AuthenticateAsync(_username, _password, ct);
                 await smtp.SendAsync(mail, ct);
@@ -91,5 +90,6 @@ namespace final_project_be.Emails
 
             return modifyTemplate.Run(model);
         }
+
     }
 }

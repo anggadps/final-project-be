@@ -10,8 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using final_project_be.Emails;
-using final_project_be.Emails.Template;
-
+using final_project_be.Email.Template;
 
 namespace final_project_be.Controllers
 {
@@ -280,7 +279,7 @@ namespace final_project_be.Controllers
 
             bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
 
-            UserLevel? userLevel = _userDataAccess.GetUserLevel(user.Id_user_level);
+            Models.UserLevel? userLevel = _userDataAccess.GetUserLevel(user.Id_user_level);
 
 
             if (!isVerified)
