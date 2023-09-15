@@ -1,7 +1,6 @@
 using final_project_be.DataAccess;
 using final_project_be.Models;
 using final_project_be.DTOs.User;
-using final_project_be.DTOs.UserLevel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -17,7 +16,6 @@ namespace final_project_be.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-
 
     public class UserController : ControllerBase
     {
@@ -284,7 +282,17 @@ namespace final_project_be.Controllers
 
             if (!isVerified)
             {
-                return BadRequest("Email or Password is incorrectyaa");
+                Name = userDto.Name,
+                Email = userDto.Email,
+                Password = userDto.Password,
+                id_user_level = userDto.id_user_level
+            };
+
+            bool result = _userDataAccess.Insert(user);
+
+            if (result)
+            {
+                return StatusCode(201, user.Id);
             }
             else
             {
@@ -318,9 +326,7 @@ namespace final_project_be.Controllers
                     Token = token,
                 });
             }
-
         }
-
 
         // update user
         [Authorize(Roles = "admin")]
@@ -336,6 +342,7 @@ namespace final_project_be.Controllers
                 Name = userDto.Name,
                 Email = userDto.Email,
                 Password = userDto.Password,
+                id_user_level = userDto.id_user_level
             };
 
             bool result = _userDataAccess.Update(id, user);
@@ -366,10 +373,5 @@ namespace final_project_be.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-    }
-
-    internal class LoginResponseDTO
-    {
-        public string Token { get; set; } = string.Empty;
     }
 }

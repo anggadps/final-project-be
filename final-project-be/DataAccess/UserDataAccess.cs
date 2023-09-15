@@ -39,6 +39,7 @@ namespace final_project_be.DataAccess
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Email = reader["Email"].ToString() ?? string.Empty,
                                     Password = reader["Password"].ToString() ?? string.Empty,
+                                    id_user_level = int.Parse(reader["id_user_level"].ToString() ?? string.Empty)
                                 });
                             }
                         }
@@ -61,9 +62,6 @@ namespace final_project_be.DataAccess
         public bool CreateUserAccount(User user)
         {
             bool result = false;
-            using (MySqlConnection connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
 
                 MySqlTransaction transaction = connection.BeginTransaction();
 
@@ -154,6 +152,14 @@ namespace final_project_be.DataAccess
                     {
                         command.Parameters.AddWithValue("@email", email);
 
+                        command.Connection = connection;
+                        command.Parameters.Clear();
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@Id", user.Id);
+                        command.Parameters.AddWithValue("@Name", user.Name);
+                        command.Parameters.AddWithValue("@Email", user.Email);
+                        command.Parameters.AddWithValue("@Password", user.Password);
+                        command.Parameters.AddWithValue("@id_user_level", user.id_user_level);
                         connection.Open();
 
                         using (MySqlDataReader reader = command.ExecuteReader())

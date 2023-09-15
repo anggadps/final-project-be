@@ -37,7 +37,7 @@ namespace final_project_be.DataAccess
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
-                                    id_category = reader["id_category"].ToString() ?? string.Empty,
+                                    TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
                                     Img = reader["Img"].ToString() ?? string.Empty
                                 });
                             }
@@ -86,7 +86,7 @@ namespace final_project_be.DataAccess
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
-                                    id_category = reader["id_category"].ToString() ?? string.Empty,
+                                    TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
                                     Img = reader["Img"].ToString() ?? string.Empty
                                 };
                             }
@@ -136,7 +136,7 @@ namespace final_project_be.DataAccess
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
-                                    id_category = reader["id_category"].ToString() ?? string.Empty,
+                                    TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
                                     Img = reader["Img"].ToString() ?? string.Empty
                                 };
                             }
@@ -165,7 +165,7 @@ namespace final_project_be.DataAccess
         public bool Insert(Course course)
         {
             bool result = false;
-            string query = $"INSERT INTO courses (Id, Name, Price, id_category, Img) VALUES (@id, @name, @price, @id_category, @img)";
+            string query = $"INSERT INTO courses (Id, Name, Price, TypeCourse, Img) VALUES (@id, @name, @price, @typeCourse, @img)";
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -178,7 +178,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@id", course.Id);
                         command.Parameters.AddWithValue("@name", course.Name);
                         command.Parameters.AddWithValue("@price", course.Price);
-                        command.Parameters.AddWithValue("@id_category", course.id_category);
+                        command.Parameters.AddWithValue("@typeCourse", course.TypeCourse);
                         command.Parameters.AddWithValue("@img", course.Img);
 
                         connection.Open();
@@ -201,7 +201,7 @@ namespace final_project_be.DataAccess
         public bool Update(Guid id, Course course)
         {
             bool result = false;
-            string query = $"UPDATE courses SET Name = @name, Price = @price, id_category = @id_category, Img = @img WHERE Id = @id";
+            string query = $"UPDATE courses SET Name = @name, Price = @price, TypeCourse = @typeCourse, Img = @img WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -215,7 +215,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@id", id);
                         command.Parameters.AddWithValue("@name", course.Name);
                         command.Parameters.AddWithValue("@price", course.Price);
-                        command.Parameters.AddWithValue("@id_category", course.id_category);
+                        command.Parameters.AddWithValue("@typeCourse", course.TypeCourse);
                         command.Parameters.AddWithValue("@img", course.Img);
 
 
