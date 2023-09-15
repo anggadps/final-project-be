@@ -35,11 +35,10 @@ namespace final_project_be.Controllers
         {
             try
             {
-                UserLevel userLevel = new UserLevel
-                {
-                    Id = Guid.NewGuid(),
-                    Name = userDTO.UserLevel
-                };
+
+                Guid defaultUserLevelId = new Guid("8a1b3833-a5c6-4a5e-891a-8d75a4ce279e"); // set default value user level to "user"
+                // test
+
 
                 User user = new User
                 {
