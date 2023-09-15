@@ -5,14 +5,7 @@ namespace final_project_be.DataAccess
 {
     public class CourseDataAccess
     {
-        private readonly string _connectionString;
-        private readonly IConfiguration _configuration;
-
-        public CourseDataAccess(IConfiguration configuration)
-        {
-            _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection");
-        }
+        private readonly string _connectionString = "server=localhost;port=3306;database=final-project;user=root;password=";
         // get all
         public List<Course> GetAll()
         {
@@ -24,36 +17,25 @@ namespace final_project_be.DataAccess
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    try
-                    {
-                        connection.Open();
+                    connection.Open();
 
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            courses.Add(new Course
                             {
-                                courses.Add(new Course
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
-                                    TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
-                                    Img = reader["Img"].ToString() ?? string.Empty
-                                });
-                            }
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
+                                TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
+                                Img = reader["Img"].ToString() ?? string.Empty
+                            });
                         }
-
-
-
                     }
-                    catch
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+
+                    connection.Close();
+
                 }
             }
 
@@ -65,133 +47,51 @@ namespace final_project_be.DataAccess
         {
             Course? course = null;
 
-            string query = $"SELECT * FROM courses WHERE Id = @id";
+            string query = $"SELECT * FROM courses WHERE Id = '{id}'";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    try
-                    {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@id", id);
-                        connection.Open();
+                    connection.Open();
 
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            course = new Course
                             {
-                                course = new Course
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
-                                    TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
-                                    Img = reader["Img"].ToString() ?? string.Empty
-                                };
-                            }
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
+                                TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
+                                Img = reader["Img"].ToString() ?? string.Empty
+                            };
                         }
+                    }
 
-                    }
-                    catch
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+                    connection.Close();
 
                 }
             }
 
             return course;
-
-        }
-
-        // get by name
-        public Course? GetByName(string name)
-        {
-            Course? course = null;
-
-            string query = $"SELECT * FROM courses WHERE Name = @name";
-
-            using (MySqlConnection connection = new MySqlConnection(_connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    try
-                    {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@name", name);
-
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                course = new Course
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
-                                    TypeCourse = reader["TypeCourse"].ToString() ?? string.Empty,
-                                    Img = reader["Img"].ToString() ?? string.Empty
-                                };
-                            }
-                        }
-
-
-                    }
-                    catch
-                    {
-
-                        throw;
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-
-                }
-            }
-
-            return course;
-
         }
 
         // insert data
         public bool Insert(Course course)
         {
             bool result = false;
-            string query = $"INSERT INTO courses (Id, Name, Price, TypeCourse, Img) VALUES (@id, @name, @price, @typeCourse, @img)";
+            string query = $"INSERT INTO courses (Id, Name, Price, TypeCourse, Img) VALUES ('{course.Id}', '{course.Name}', '{course.Price}', '{course.TypeCourse}', '{course.Img}')";
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    try
-                    {
-                        command.Connection = connection;
-                        command.Parameters.Clear();
-                        command.CommandText = query;
-                        command.Parameters.AddWithValue("@id", course.Id);
-                        command.Parameters.AddWithValue("@name", course.Name);
-                        command.Parameters.AddWithValue("@price", course.Price);
-                        command.Parameters.AddWithValue("@typeCourse", course.TypeCourse);
-                        command.Parameters.AddWithValue("@img", course.Img);
-
-                        connection.Open();
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
-                    }
-                    catch
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+                    command.Connection = connection;
+                    command.CommandText = query;
+                    connection.Open();
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                    connection.Close();
                 }
             }
             return result;
@@ -201,38 +101,20 @@ namespace final_project_be.DataAccess
         public bool Update(Guid id, Course course)
         {
             bool result = false;
-            string query = $"UPDATE courses SET Name = @name, Price = @price, TypeCourse = @typeCourse, Img = @img WHERE Id = @id";
+            string query = $"UPDATE courses SET Name = '{course.Name}', Price = '{course.Price}', TypeCourse = '{course.TypeCourse}', Img = '{course.Img}' WHERE Id = '{id}'";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    try
-                    {
-                        command.Connection = connection;
-                        command.Parameters.Clear();
-                        command.CommandText = query;
-                        command.Parameters.AddWithValue("@id", id);
-                        command.Parameters.AddWithValue("@name", course.Name);
-                        command.Parameters.AddWithValue("@price", course.Price);
-                        command.Parameters.AddWithValue("@typeCourse", course.TypeCourse);
-                        command.Parameters.AddWithValue("@img", course.Img);
+                    command.Connection = connection;
+                    command.CommandText = query;
 
+                    connection.Open();
 
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                        connection.Open();
-
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
-
-                    }
-                    catch
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+                    connection.Close();
                 }
             }
 
@@ -244,32 +126,20 @@ namespace final_project_be.DataAccess
         {
             bool result = false;
 
-            string query = $"DELETE FROM courses WHERE Id = @id";
+            string query = $"DELETE FROM courses WHERE Id = '{id}'";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    try
-                    {
-                        command.Connection = connection;
-                        command.CommandText = query;
-                        command.Parameters.AddWithValue("@id", id);
+                    command.Connection = connection;
+                    command.CommandText = query;
 
+                    connection.Open();
 
-                        connection.Open();
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
-
-                    }
-                    catch
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+                    connection.Close();
                 }
             }
 
