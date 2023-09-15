@@ -39,7 +39,6 @@ namespace final_project_be.DataAccess
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Email = reader["Email"].ToString() ?? string.Empty,
                                     Password = reader["Password"].ToString() ?? string.Empty,
-                                    id_user_level = int.Parse(reader["id_user_level"].ToString() ?? string.Empty)
                                 });
                             }
                         }
@@ -59,40 +58,35 @@ namespace final_project_be.DataAccess
         }
 
         // insert user
-        public bool CreateUserAccount(User user, UserLevel userLevel)
+        public bool CreateUserAccount(User user)
         {
             bool result = false;
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
 
                 MySqlTransaction transaction = connection.BeginTransaction();
 
                 try
                 {
 
-                    MySqlCommand command2 = new MySqlCommand();
-                    command2.Connection = connection;
-                    command2.Transaction = transaction;
-                    command2.Parameters.Clear();
-
-                    command2.CommandText = "INSERT INTO user_levels (Id, Name) VALUES (@Id, @Name)";
-                    command2.Parameters.AddWithValue("@Id", userLevel.Id);
-                    command2.Parameters.AddWithValue("@Name", userLevel.Name);
 
                     MySqlCommand command1 = new MySqlCommand();
                     command1.Connection = connection;
                     command1.Transaction = transaction;
                     command1.Parameters.Clear();
 
-                    command1.CommandText = "INSERT INTO users (Id, id_user_level, Name, Email, Password ) VALUES (@Id, @id_user_level, @Name, @Email, @Password )";
+                    command1.CommandText = "INSERT INTO users (Id, id_user_level, Name, Email, Password, Is_active ) VALUES (@Id, @id_user_level, @Name, @Email, @Password, @Is_active )";
                     command1.Parameters.AddWithValue("@Id", user.Id);
-                    command1.Parameters.AddWithValue("@id_user_level", userLevel.Id);
+                    command1.Parameters.AddWithValue("@id_user_level", user.Id_user_level);
                     command1.Parameters.AddWithValue("@Name", user.Name);
                     command1.Parameters.AddWithValue("@Email", user.Email);
                     command1.Parameters.AddWithValue("@Password", user.Password);
+                    command1.Parameters.AddWithValue("@Is_Active", user.Is_active);
 
 
 
                     var result1 = command1.ExecuteNonQuery();
-                    var result2 = command2.ExecuteNonQuery();
 
                     transaction.Commit();
 
@@ -113,8 +107,8 @@ namespace final_project_be.DataAccess
             return result;
         }
 
-        // get by name
-        public User? CheckUser(string Email)
+        // activated
+        public bool ActivatedUser(Guid id)
         {
             bool result = false;
 
@@ -150,7 +144,7 @@ namespace final_project_be.DataAccess
         {
             User? user = null;
 
-            string query = "SELECT * FROM users WHERE Email = @Email";
+            string query = "SELECT * FROM users WHERE Email = @email";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -158,16 +152,8 @@ namespace final_project_be.DataAccess
                 {
                     try
                     {
-                        command.Parameters.AddWithValue("@Email", Email);
+                        command.Parameters.AddWithValue("@email", email);
 
-                        command.Connection = connection;
-                        command.Parameters.Clear();
-                        command.CommandText = query;
-                        command.Parameters.AddWithValue("@Id", user.Id);
-                        command.Parameters.AddWithValue("@Name", user.Name);
-                        command.Parameters.AddWithValue("@Email", user.Email);
-                        command.Parameters.AddWithValue("@Password", user.Password);
-                        command.Parameters.AddWithValue("@id_user_level", user.id_user_level);
                         connection.Open();
 
                         using (MySqlDataReader reader = command.ExecuteReader())
@@ -177,9 +163,11 @@ namespace final_project_be.DataAccess
                                 user = new User
                                 {
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Id_user_level = Guid.Parse(reader["Id_user_level"].ToString() ?? string.Empty),
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Email = reader["Email"].ToString() ?? string.Empty,
                                     Password = reader["Password"].ToString() ?? string.Empty,
+                                    Is_active = Convert.ToInt32(reader["Is_active"]),
                                 };
                             }
                         }
@@ -198,7 +186,8 @@ namespace final_project_be.DataAccess
             return user;
         }
 
-        // UserLevel
+
+        // GetUserLevel
         public UserLevel? GetUserLevel(Guid id)
         {
             UserLevel? userLevel = null;
@@ -211,7 +200,7 @@ namespace final_project_be.DataAccess
                     command.Connection = connection;
                     command.Parameters.Clear();
 
-                    
+
                     command.CommandText = "SELECT user_levels.name " +
                         "FROM users " +
                         "INNER JOIN user_levels ON users.id_user_level = user_levels.id WHERE user_levels.id = @Id";
@@ -226,7 +215,6 @@ namespace final_project_be.DataAccess
                         {
                             userLevel = new UserLevel
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
                             };
                         }
@@ -239,12 +227,42 @@ namespace final_project_be.DataAccess
             return userLevel;
         }
 
+        // Reset password
+        public bool ResetPassword(string email, string password)
+        {
+            bool result = false;
+
+            string query = "UPDATE Users SET Password = @Password WHERE Email = @Email";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.Parameters.Clear();
+
+                    command.CommandText = query;
+
+                    command.Parameters.AddWithValue("@Email", email);
+                    command.Parameters.AddWithValue("@Password", password);
+
+                    connection.Open();
+
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
+
+                    connection.Close();
+                }
+            }
+
+            return result;
+        }
+
         // update user
         public bool Update(Guid id, User user)
         {
             bool result = false;
 
-            string query = "UPDATE users SET Name = @Name, Email = @Email, Password = @Password, id_user_level = @id_user_level WHERE Id = @Id";
+            string query = "UPDATE users SET Name = @Name, Email = @Email, Password = @Password, Id_user_level = @Id_user_level WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -260,7 +278,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@Name", user.Name);
                         command.Parameters.AddWithValue("@Email", user.Email);
                         command.Parameters.AddWithValue("@Password", user.Password);
-                        command.Parameters.AddWithValue("@id_user_level", user.id_user_level);
+                        command.Parameters.AddWithValue("@Id_user_level", user.Id_user_level);
                         connection.Open();
 
                         result = command.ExecuteNonQuery() > 0 ? true : false;
@@ -315,5 +333,7 @@ namespace final_project_be.DataAccess
 
             return result;
         }
+
+
     }
 }
