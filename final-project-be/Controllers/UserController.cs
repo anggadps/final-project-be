@@ -279,7 +279,7 @@ namespace final_project_be.Controllers
 
             bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
 
-            Models.UserLevel? userLevel = _userDataAccess.GetUserLevel(user.Id_user_level);
+            UserLevel? userLevel = _userDataAccess.GetUserLevel(user.Id_user_level);
 
 
             if (!isVerified)
