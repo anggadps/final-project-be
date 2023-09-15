@@ -20,7 +20,7 @@ builder.Services.AddScoped<InvoiceDataAccess>();
 
 builder.Services.AddCors();
 
-var jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtConfig:Key").Value));
+var jwtKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtConfig:Key").Value));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer
     (options =>
