@@ -70,7 +70,7 @@ namespace final_project_be.DataAccess
                 try
                 {
 
-
+                
                     MySqlCommand command1 = new MySqlCommand();
                     command1.Connection = connection;
                     command1.Transaction = transaction;
@@ -118,7 +118,7 @@ namespace final_project_be.DataAccess
                 command.Connection = connection;
                 command.Parameters.Clear();
 
-                command.CommandText = "UPDATE users SET is_active = 1 WHERE Id = @id";
+                command.CommandText = "UPDATE Users SET is_active = 1 WHERE Id = @id";
                 command.Parameters.AddWithValue("@id", id);
 
                 try
@@ -200,7 +200,7 @@ namespace final_project_be.DataAccess
                     command.Connection = connection;
                     command.Parameters.Clear();
 
-
+                    
                     command.CommandText = "SELECT user_levels.name " +
                         "FROM users " +
                         "INNER JOIN user_levels ON users.id_user_level = user_levels.id WHERE user_levels.id = @Id";
