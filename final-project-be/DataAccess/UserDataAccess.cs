@@ -116,6 +116,38 @@ namespace final_project_be.DataAccess
         // get by name
         public User? CheckUser(string Email)
         {
+            bool result = false;
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                MySqlCommand command = new MySqlCommand();
+                command.Connection = connection;
+                command.Parameters.Clear();
+
+                command.CommandText = "UPDATE Users SET is_active = 1 WHERE Id = @id";
+                command.Parameters.AddWithValue("@id", id);
+
+                try
+                {
+                    connection.Open();
+
+                    result = command.ExecuteNonQuery() > 0;
+                }
+                catch
+                {
+                    throw;
+                }
+                finally { connection.Close(); }
+            }
+
+            return result;
+
+        }
+
+
+        // get by email
+        public User? CheckUser(string email)
+        {
             User? user = null;
 
             string query = "SELECT * FROM users WHERE Email = @Email";
@@ -179,7 +211,11 @@ namespace final_project_be.DataAccess
                     command.Connection = connection;
                     command.Parameters.Clear();
 
-                    command.CommandText = "SELECT * FROM user_levels WHERE Id = @Id";
+                    
+                    command.CommandText = "SELECT user_levels.name " +
+                        "FROM users " +
+                        "INNER JOIN user_levels ON users.id_user_level = user_levels.id WHERE user_levels.id = @Id";
+
                     command.Parameters.AddWithValue("@Id", id);
 
                     connection.Open();
