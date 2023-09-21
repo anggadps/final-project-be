@@ -24,6 +24,23 @@ namespace final_project_be.Controllers
             return Ok(courses);
         }
 
+        // get by id_category
+        [HttpGet("GetByIdCategory")]
+        public IActionResult GetByIdCategory(Guid id)
+        {
+            List<CourseByCategory> coursesByCategory = _courseDataAccess.GetByIdCategory(id);
+
+            if (coursesByCategory == null || coursesByCategory.Count == 0)
+            {
+                return NotFound("Data not found");
+            }
+
+            return Ok(coursesByCategory);
+        }
+
+
+
+
         // get by id
         [HttpGet("GetById")]
         public IActionResult GetById(Guid id)
