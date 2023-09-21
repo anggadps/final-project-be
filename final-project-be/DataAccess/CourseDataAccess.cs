@@ -13,6 +13,7 @@ namespace final_project_be.DataAccess
             _configuration = configuration;
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
+
         // get all
         public List<Course> GetAll()
         {
@@ -59,6 +60,57 @@ namespace final_project_be.DataAccess
 
             return courses;
         }
+
+        // get by id_category
+        public List<CourseByCategory> GetByIdCategory(Guid id)
+        {
+            List<CourseByCategory> coursesByCategory = new List<CourseByCategory>();
+
+            string query = $"SELECT courses.name, courses.price, courses.img FROM courses INNER JOIN categories ON courses.id_category = categories.id WHERE courses.id_category = @id";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@id", id);
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                CourseByCategory courseByCategory = new CourseByCategory
+                                {
+                                    Name = reader["name"].ToString() ?? string.Empty,
+                                    Price = int.Parse(reader["price"].ToString() ?? "0"),
+                                    Img = reader["img"].ToString() ?? string.Empty
+                                };
+
+                                coursesByCategory.Add(courseByCategory);
+                            }
+                        }
+
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return coursesByCategory;
+        }
+
+
+
+
 
         // get by id
         public Course? GetById(Guid id)
