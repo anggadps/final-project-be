@@ -72,10 +72,25 @@ namespace final_project_be.Controllers
 
         // post
         [HttpPost]
-        public IActionResult Post([FromBody] CourseDTO courseDto)
+        public async Task<IActionResult> Post([FromForm] CourseDTO courseDto)
         {
             if (courseDto == null)
                 return BadRequest("Data should be inputed");
+
+            if (courseDto.ImageFile == null)
+                return BadRequest("Image file should be provided");
+
+            // Generate unique filename for the image
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + courseDto.ImageFile.FileName;
+
+            // Define the folder path where images will be saved
+            string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+            // Save the image file to the server
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await courseDto.ImageFile.CopyToAsync(stream);
+            }
 
             Course course = new Course
             {
@@ -83,7 +98,7 @@ namespace final_project_be.Controllers
                 Name = courseDto.Name,
                 Price = courseDto.Price,
                 id_category = courseDto.id_category,
-                Img = courseDto.Img,
+                Img = uniqueFileName, // Save the unique filename in the database
             };
 
             bool result = _courseDataAccess.Insert(course);
@@ -97,6 +112,7 @@ namespace final_project_be.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
 
         // put
         [HttpPut]

@@ -8,5 +8,7 @@ namespace final_project_be.Models
         public string? id_category { get; set; } = string.Empty;
         public string? Img { get; set; }
 
+        public string ImagePath { get; set; } = string.Empty;
+
     }
 }
