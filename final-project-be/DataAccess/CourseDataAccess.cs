@@ -221,7 +221,7 @@ namespace final_project_be.DataAccess
         public bool Insert(Course course)
         {
             bool result = false;
-            string query = $"INSERT INTO courses (Id, Name, Price, id_category, Img) VALUES (@id, @name, @price, @id_category, @img, @description)";
+            string query = $"INSERT INTO courses (Id, Name, Price, id_category, Img, Description) VALUES (@id, @name, @price, @id_category, @img, @description)";
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -236,6 +236,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@price", course.Price);
                         command.Parameters.AddWithValue("@id_category", course.id_category);
                         command.Parameters.AddWithValue("@img", course.Img);
+                        command.Parameters.AddWithValue("@description", course.Description);
 
                         connection.Open();
                         result = command.ExecuteNonQuery() > 0 ? true : false;
