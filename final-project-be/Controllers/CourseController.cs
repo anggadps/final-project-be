@@ -124,7 +124,7 @@ namespace final_project_be.Controllers
                 Id = Guid.NewGuid(),
                 Name = courseDTO.Name,
                 Price = courseDTO.Price,
-                TypeCourse = courseDTO.TypeCourse,
+                id_category = courseDTO.id_category,
                 Img = courseDTO.Img,
             };
 

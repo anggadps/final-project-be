@@ -7,7 +7,7 @@ namespace final_project_be.DTOs.Course
 
         public int Price { get; set; } = 0;
 
-        public string? TypeCourse { get; set; } = string.Empty;
+        public string? id_category { get; set; } = string.Empty;
 
         public string? Img { get; set; }
 
