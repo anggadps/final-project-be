@@ -39,7 +39,9 @@ namespace final_project_be.DataAccess
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
                                     id_category = reader["id_category"].ToString() ?? string.Empty,
-                                    Img = reader["Img"].ToString() ?? string.Empty
+                                    Img = reader["Img"].ToString() ?? string.Empty,
+                                    Description = reader["Description"].ToString() ?? string.Empty,
+                                    
                                 });
                             }
                         }
@@ -66,7 +68,7 @@ namespace final_project_be.DataAccess
         {
             List<CourseByCategory> coursesByCategory = new List<CourseByCategory>();
 
-            string query = $"SELECT courses.name, courses.price, courses.img FROM courses INNER JOIN categories ON courses.id_category = categories.id WHERE courses.id_category = @id";
+            string query = $"SELECT * FROM courses INNER JOIN categories ON courses.id_category = categories.id WHERE courses.id_category = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -84,6 +86,7 @@ namespace final_project_be.DataAccess
                             {
                                 CourseByCategory courseByCategory = new CourseByCategory
                                 {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     Name = reader["name"].ToString() ?? string.Empty,
                                     Price = int.Parse(reader["price"].ToString() ?? "0"),
                                     Img = reader["img"].ToString() ?? string.Empty
@@ -139,7 +142,8 @@ namespace final_project_be.DataAccess
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
                                     id_category = reader["id_category"].ToString() ?? string.Empty,
-                                    Img = reader["Img"].ToString() ?? string.Empty
+                                    Img = reader["Img"].ToString() ?? string.Empty,
+                                    Description = reader["Description"].ToString() ?? string.Empty,
                                 };
                             }
                         }
@@ -217,7 +221,7 @@ namespace final_project_be.DataAccess
         public bool Insert(Course course)
         {
             bool result = false;
-            string query = $"INSERT INTO courses (Id, Name, Price, id_category, Img) VALUES (@id, @name, @price, @id_category, @img)";
+            string query = $"INSERT INTO courses (Id, Name, Price, id_category, Img) VALUES (@id, @name, @price, @id_category, @img, @description)";
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
