@@ -11,5 +11,8 @@ namespace final_project_be.DTOs.Course
 
         public string? Img { get; set; }
 
+        public IFormFile? ImageFile { get; set; }
+
+
     }
 }

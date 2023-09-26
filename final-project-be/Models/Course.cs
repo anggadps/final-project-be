@@ -8,5 +8,9 @@ namespace final_project_be.Models
         public string? TypeCourse { get; set; } = string.Empty;
         public string? Img { get; set; }
 
+        public string ImagePath { get; set; } = string.Empty;
+
+        public string Description { get; set; } = string.Empty;
+
     }
 }
