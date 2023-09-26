@@ -98,7 +98,7 @@ namespace final_project_be.Controllers
                 Name = courseDto.Name,
                 Price = courseDto.Price,
                 id_category = courseDto.id_category,
-                Img = uniqueFileName, // Save the unique filename in the database
+                Img = uniqueFileName,
             };
 
             bool result = _courseDataAccess.Insert(course);
