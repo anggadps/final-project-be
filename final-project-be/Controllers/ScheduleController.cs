@@ -20,7 +20,7 @@ namespace final_project_be.Controllers
         [HttpGet("GetById")]
         public IActionResult Get(Guid id)
         {
-            Schedule? schedule = _scheduleDataAccess.GetById(id);
+            var schedule = _scheduleDataAccess.GetById(id);
 
             if (schedule == null)
             {

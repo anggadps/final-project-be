@@ -16,9 +16,9 @@ namespace final_project_be.DataAccess
 
 
         // get schedule by id course
-        public Schedule? GetById(Guid id)
+        public List<Schedule> GetById(Guid id)
         {
-            Schedule? schedule = null;
+            List<Schedule> schedule = new List<Schedule>();
 
             string query = $"SELECT * FROM schedules WHERE id_course = @id";
 
@@ -41,12 +41,12 @@ namespace final_project_be.DataAccess
                         {
                             while (reader.Read())
                             {
-                                schedule = new Schedule
+                                schedule.Add(new Schedule
                                 {
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     Id_course = reader["id_course"].ToString() ?? string.Empty,
                                     Schedule_date = Convert.ToDateTime(reader["schedule_date"])
-                                };
+                                });
                             }
                         }
                     }
