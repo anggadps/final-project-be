@@ -33,7 +33,7 @@ namespace final_project_be.Controllers
         }
 
         // get all user
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "user")]
         [HttpGet]
         public IActionResult GetAll()
         {

@@ -14,6 +14,7 @@ namespace final_project_be.DataAccess
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
+
         // get all
         public List<User> GetAll()
         {

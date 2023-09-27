@@ -39,6 +39,7 @@ builder.Services.AddSwaggerGen(option =>
                new string[] {}
          }
     });
+
 });
 
 
@@ -85,6 +86,8 @@ app.UseCors(builder => builder
     .AllowAnyHeader());
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
