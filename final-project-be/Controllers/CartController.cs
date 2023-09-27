@@ -25,6 +25,7 @@ namespace final_project_be.Controllers
             try
             {
                 var id_user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 Cart cart = new Cart
                 {
                     Id = Guid.NewGuid(),
@@ -55,14 +56,14 @@ namespace final_project_be.Controllers
         {
             try
             {
-                var id_user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var cartList = _cartDataAccess.GetViewCart(id_user);
+                var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cartList = _cartDataAccess.GetViewCart(id);
 
                 return Ok(cartList);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An Error Occurs");
+               return Problem(ex.Message);
             }
         }
 

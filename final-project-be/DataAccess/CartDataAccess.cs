@@ -59,11 +59,11 @@ namespace final_project_be.DataAccess
         {
             List<ViewCartDTO> carts = new List<ViewCartDTO>();
 
-            string query = "SELECT carts.id, schedules.id AS id_schedule, categories.name AS category_name, courses.name AS course_name, courses.price, schedules.schedule_date, courses.img" +
-                "FROM carts" +
-                "INNER JOIN schedules ON carts.id_schedule = schedules.id" +
-                "INNER JOIN courses ON schedules.id_course = courses.id" +
-                "INNER JOIN categories ON courses.id_category = categories.id" +
+            string query = "SELECT carts.id, schedules.id AS id_schedule, categories.name AS category_name, courses.name AS course_name, courses.price, schedules.schedule_date, courses.img " +
+                "FROM carts " +
+                "INNER JOIN schedules ON carts.id_schedule = schedules.id " +
+                "INNER JOIN courses ON schedules.id_course = courses.id " +
+                "INNER JOIN categories ON courses.id_category = categories.id " +
                 "WHERE carts.id_user = @id;";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
