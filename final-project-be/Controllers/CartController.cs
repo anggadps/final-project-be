@@ -31,6 +31,7 @@ namespace final_project_be.Controllers
                     Id = Guid.NewGuid(),
                     Id_user = id_user,
                     Id_schedule = cartDTO.Id_schedule
+
                 };
 
                 bool result = _cartDataAccess.AddCart(cart);
