@@ -20,6 +20,7 @@ builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<OrderDataAccess>();
 builder.Services.AddScoped<InvoiceDataAccess>();
 builder.Services.AddScoped<ScheduleDataAccess>();
+builder.Services.AddScoped<CartDataAccess>();
 
 builder.Services.AddCors();
 

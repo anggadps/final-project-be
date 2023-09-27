@@ -293,6 +293,7 @@ namespace final_project_be.Controllers
 
                 var claims = new Claim[]
                 {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, userLevel.Name)
                 };
