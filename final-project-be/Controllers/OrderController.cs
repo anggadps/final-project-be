@@ -18,29 +18,37 @@ namespace final_project_be.Controllers
 
         // insert order
         [HttpPost]
-        public IActionResult Post([FromBody] OrderDTO orderDto)
+        public IActionResult Post([FromBody] OrderDTO[] orderDto)
         {
             if (orderDto == null)
                 return BadRequest("Data should be inputed");
 
-            Order order = new Order
-            {
-                Id = Guid.NewGuid(),
-                id_user = Guid.NewGuid(),
-                id_course = Guid.NewGuid(),
-                schedule_date = orderDto.schedule_date
-            };
 
-            bool result = _orderDataAccess.Insert(order);
+            foreach(OrderDTO odto in orderDto) 
+            { 
+                Console.WriteLine(odto.Id_course);
+                Console.WriteLine(odto.Id_schedule);
+                Console.WriteLine(odto.Price);
+                Order order = new Order
+                {
+                    Id = Guid.NewGuid(),
+                    Id_course = odto.Id_course,
+                    Id_schedule = odto.Id_schedule,
+                    Price = odto.Price,
+                };
 
-            if (result)
+                bool result = _orderDataAccess.Insert(order);
+            }
+            return StatusCode(500, "Internal server error");
+
+            /*if (result)
             {
                 return StatusCode(201, order.Id);
             }
             else
             {
                 return StatusCode(500, "Internal server error");
-            }
+            }*/
 
 
         }

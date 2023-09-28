@@ -51,6 +51,7 @@ builder.Services.AddScoped<OrderDataAccess>();
 builder.Services.AddScoped<InvoiceDataAccess>();
 builder.Services.AddScoped<ScheduleDataAccess>();
 builder.Services.AddScoped<CartDataAccess>();
+builder.Services.AddScoped<PaymentDataAccess>();
 
 builder.Services.AddCors();
 

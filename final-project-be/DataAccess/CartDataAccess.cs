@@ -59,7 +59,7 @@ namespace final_project_be.DataAccess
         {
             List<ViewCartDTO> carts = new List<ViewCartDTO>();
 
-            string query = "SELECT carts.id, schedules.id AS id_schedule, categories.name AS category_name, courses.name AS course_name, courses.price, schedules.schedule_date, courses.img " +
+            string query = "SELECT carts.id, schedules.id AS id_schedule, courses.id AS id_course, categories.name AS category_name, courses.name AS course_name, courses.price, schedules.schedule_date, courses.img " +
                 "FROM carts " +
                 "INNER JOIN schedules ON carts.id_schedule = schedules.id " +
                 "INNER JOIN courses ON schedules.id_course = courses.id " +
@@ -87,6 +87,7 @@ namespace final_project_be.DataAccess
                                 {
                                     Id = Guid.Parse(reader["id"].ToString() ?? string.Empty),
                                     Id_schedule = Guid.Parse(reader["id_schedule"].ToString() ?? string.Empty),
+                                    Id_course = Guid.Parse(reader["id_course"].ToString() ?? string.Empty),
                                     Category_name = reader["category_name"].ToString() ?? string.Empty,
                                     Course_name = reader["course_name"].ToString() ?? string.Empty,
                                     Price = Convert.ToInt32(reader["price"]),

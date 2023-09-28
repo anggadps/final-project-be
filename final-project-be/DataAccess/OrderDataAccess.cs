@@ -18,7 +18,7 @@ namespace final_project_be.DataAccess
         public bool Insert(Order order)
         {
             bool result = false;
-            string query = "INSERT INTO orders (id, id_user, id_course, schedule_date) VALUES (@id, @id_user, @id_course,  @schedule_date)";
+            string query = "INSERT INTO orders (id, id_schedule, id_course, total_price) VALUES (@id, @id_schedule, @id_course,  @total_price)";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -28,9 +28,9 @@ namespace final_project_be.DataAccess
                     {
                         connection.Open();
                         command.Parameters.AddWithValue("@id", order.Id);
-                        command.Parameters.AddWithValue("@id_user", order.id_user);
-                        command.Parameters.AddWithValue("@id_course", order.id_course);
-                        command.Parameters.AddWithValue("@schedule_date", order.schedule_date);
+                        command.Parameters.AddWithValue("@id_schedule", order.Id_schedule);
+                        command.Parameters.AddWithValue("@id_course", order.Id_course);
+                        command.Parameters.AddWithValue("@total_price", order.Price);
 
 
                         result = command.ExecuteNonQuery() > 0 ? true : false;
