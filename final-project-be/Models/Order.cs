@@ -4,8 +4,10 @@ namespace final_project_be.Models
     {
         public Guid Id { get; set; }
         public string? Id_user { get; set; }
-        public string? Id_course { get; set; }
         public string? Id_schedule { get; set; }
-        public int Price { get; set; }
+        public string? Id_course { get; set; }
+        public int Total_price { get; set; }
+        
+
     }
 }

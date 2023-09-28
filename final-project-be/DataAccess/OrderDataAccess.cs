@@ -30,7 +30,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@id", order.Id);
                         command.Parameters.AddWithValue("@id_schedule", order.Id_schedule);
                         command.Parameters.AddWithValue("@id_course", order.Id_course);
-                        command.Parameters.AddWithValue("@total_price", order.Price);
+                        command.Parameters.AddWithValue("@total_price", order.Total_price);
 
 
                         result = command.ExecuteNonQuery() > 0 ? true : false;

@@ -2,6 +2,7 @@ using final_project_be.DataAccess;
 using final_project_be.Models;
 using final_project_be.DTOs.Order;
 using Microsoft.AspNetCore.Mvc;
+using final_project_be.DTOs.ScheduleDTO;
 
 namespace final_project_be.Controllers
 {
@@ -20,26 +21,36 @@ namespace final_project_be.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] OrderDTO[] orderDto)
         {
-            if (orderDto == null)
-                return BadRequest("Data should be inputed");
+            
+            try
+            {
+                if (orderDto == null)
+                    return BadRequest("Data should be inputed");
 
 
-            foreach(OrderDTO odto in orderDto) 
-            { 
-                Console.WriteLine(odto.Id_course);
-                Console.WriteLine(odto.Id_schedule);
-                Console.WriteLine(odto.Price);
-                Order order = new Order
+                foreach (OrderDTO odto in orderDto)
                 {
-                    Id = Guid.NewGuid(),
-                    Id_course = odto.Id_course,
-                    Id_schedule = odto.Id_schedule,
-                    Price = odto.Price,
-                };
+                    Console.WriteLine(odto.Id_course);
+                    Console.WriteLine(odto.Id_schedule);
+                    Console.WriteLine(odto.Price);
 
-                bool result = _orderDataAccess.Insert(order);
+                    Order order = new Order
+                    {
+                        Id = Guid.NewGuid(),
+                        Id_course = odto.Id_course,
+                        Id_schedule = odto.Id_schedule,
+                        Total_price = odto.Price,
+                    };
+
+                    bool result = _orderDataAccess.Insert(order);
+                }
+                return StatusCode(500, "Internal server error");
+
             }
-            return StatusCode(500, "Internal server error");
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
 
             /*if (result)
             {
