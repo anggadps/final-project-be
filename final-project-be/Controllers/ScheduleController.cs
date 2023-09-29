@@ -1,6 +1,6 @@
 ﻿using final_project_be.DataAccess;
 using final_project_be.DTOs.Category;
-using final_project_be.DTOs.ScheduleDTO;
+using final_project_be.DTOs.Schedule;
 using final_project_be.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

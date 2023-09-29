@@ -1,4 +1,4 @@
-﻿namespace final_project_be.DTOs.ScheduleDTO
+﻿namespace final_project_be.DTOs.Schedule
 {
     public class ScheduleDTO
     {

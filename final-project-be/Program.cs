@@ -48,6 +48,7 @@ builder.Services.AddScoped<CourseDataAccess>();
 builder.Services.AddScoped<UserDataAccess>();
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<OrderDataAccess>();
+builder.Services.AddScoped<OrderDetailDataAccess>();
 builder.Services.AddScoped<InvoiceDataAccess>();
 builder.Services.AddScoped<ScheduleDataAccess>();
 builder.Services.AddScoped<CartDataAccess>();
