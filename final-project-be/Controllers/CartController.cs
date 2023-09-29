@@ -68,6 +68,21 @@ namespace final_project_be.Controllers
             }
         }
 
+        [HttpDelete]
+        public IActionResult DeleteCart(Guid id)
+        {
+            bool result = _cartDataAccess.DeleteCart(id);
+
+            if (result)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
 
     }
 }

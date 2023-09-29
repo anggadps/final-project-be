@@ -110,6 +110,41 @@ namespace final_project_be.DataAccess
             return carts;
         }
 
+        public bool DeleteCart(Guid id)
+        {
+            bool result = false;
+
+            string query = "DELETE FROM carts WHERE Id = @Id";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        command.Connection = connection;
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@Id", id);
+
+
+                        connection.Open();
+
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return result;
+        }
+
 
     }
 }
