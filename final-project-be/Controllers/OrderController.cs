@@ -147,5 +147,24 @@ namespace final_project_be.Controllers
                 return Problem(ex.Message);
             }
         }
+
+
+        [HttpGet("ViewMyClass")]
+        public IActionResult GetCartByIdUser()
+        {
+            try
+            {
+                var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cartList = _orderDataAccess.ViewMyClass(id);
+
+                return Ok(cartList);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+
     }
 }
