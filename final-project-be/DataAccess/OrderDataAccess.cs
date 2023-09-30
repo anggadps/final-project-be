@@ -107,7 +107,7 @@ namespace final_project_be.DataAccess
         {
             List<Order> orders = new List<Order>();
 
-            string query = $"SELECT o.id, o.id_user, o.no_invoice, o.pay_date, o.total_course , o.total_price, c.name AS course_name, cat.name AS category_name, s.schedule_date, c.price " +
+            string query = $"SELECT o.id, o.id_user, o.no_invoice, o.pay_date, o.total_course , o.total_price, c.name AS course_name, cat.name AS category_name, s.schedule_date, c.price , c.img " +
                 $"FROM orders AS o " +
                 $"INNER JOIN order_details AS od ON o.id = od.id_order " +
                 $"INNER JOIN courses AS c ON od.id_course = c.id " +
@@ -142,6 +142,7 @@ namespace final_project_be.DataAccess
                                     Total_course = decimal.Parse(reader["total_course"].ToString() ?? "0"),
                                     Total_price = decimal.Parse(reader["total_price"].ToString() ?? "0"),
                                     Pay_date = DateTime.Parse(reader["pay_date"].ToString() ?? string.Empty),
+                                    Img = reader["img"].ToString() ?? string.Empty,
                                 };
 
                                 orders.Add(order);

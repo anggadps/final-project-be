@@ -12,7 +12,8 @@ namespace final_project_be.Models
         public decimal Total_course { get; set; }
         public decimal Total_price { get; set; }
         public DateTime Pay_date { get; set;}
-        
+        public string? Img { get; set; }
+
 
     }
 }
