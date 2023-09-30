@@ -138,6 +138,7 @@ namespace final_project_be.Controllers
             {
                 var id_user = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var invoiceDetailList = _orderDataAccess.ViewInvoiceDetail(id ,id_user);
+                
 
                 return Ok(invoiceDetailList);
             }
