@@ -2,6 +2,7 @@ using final_project_be.DataAccess;
 using final_project_be.Models;
 using final_project_be.DTOs.Course;
 using Microsoft.AspNetCore.Mvc;
+using final_project_be.DTOs.Payment;
 
 namespace final_project_be.Controllers
 {
@@ -115,10 +116,25 @@ namespace final_project_be.Controllers
 
         // put
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] CourseDTO courseDTO)
+        public async Task<IActionResult>  Put(Guid id, [FromForm] CourseDTO courseDTO)
         {
             if (courseDTO == null)
                 return BadRequest("Data should be inputed");
+
+            if (courseDTO.ImageFile == null)
+                return BadRequest("Image file should be provided");
+
+            // Generate unique filename for the image
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + courseDTO.ImageFile.FileName;
+
+            // Define the folder path where images will be saved
+            string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+            // Save the image file to the server
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await courseDTO.ImageFile.CopyToAsync(stream);
+            }
 
             Course course = new Course
             {
@@ -126,7 +142,7 @@ namespace final_project_be.Controllers
                 Name = courseDTO.Name,
                 Price = courseDTO.Price,
                 id_category = courseDTO.id_category,
-                Img = courseDTO.Img,
+                Img = uniqueFileName
             };
 
             bool result = _courseDataAccess.Update(id, course);

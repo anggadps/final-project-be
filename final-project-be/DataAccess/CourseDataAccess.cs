@@ -19,7 +19,10 @@ namespace final_project_be.DataAccess
         {
             List<Course> courses = new List<Course>();
 
-            string query = "SELECT * FROM courses";
+            string query = "SELECT courses.id, courses.id_category, courses.name, courses.price, courses.img, categories.name AS category_name, courses.description " +
+                "FROM courses " +
+                "INNER JOIN categories " +
+                "ON courses.id_category = categories.id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -35,12 +38,13 @@ namespace final_project_be.DataAccess
                             {
                                 courses.Add(new Course
                                 {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Price = int.Parse(reader["Price"].ToString() ?? string.Empty),
+                                    Id = Guid.Parse(reader["id"].ToString() ?? string.Empty),
+                                    Name = reader["name"].ToString() ?? string.Empty,
+                                    Price = int.Parse(reader["price"].ToString() ?? string.Empty),
                                     id_category = reader["id_category"].ToString() ?? string.Empty,
-                                    Img = reader["Img"].ToString() ?? string.Empty,
-                                    Description = reader["Description"].ToString() ?? string.Empty,
+                                    Category_name = reader["category_name"].ToString() ?? string.Empty,
+                                    Img = reader["img"].ToString() ?? string.Empty,
+                                    Description = reader["description"].ToString() ?? string.Empty,
                                     
                                 });
                             }
@@ -110,8 +114,6 @@ namespace final_project_be.DataAccess
 
             return coursesByCategory;
         }
-
-
 
 
 

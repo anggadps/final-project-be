@@ -3,6 +3,7 @@ using final_project_be.Models;
 using final_project_be.DTOs.Category;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using final_project_be.DTOs.Payment;
 
 namespace final_project_be.Controllers
 {
@@ -38,16 +39,31 @@ namespace final_project_be.Controllers
 
 
         [HttpPost]
-        public IActionResult Post([FromBody] CategoryDTO categoryDto)
+        public async Task<IActionResult>  Post([FromForm] CategoryDTO categoryDto)
         {
             if (categoryDto == null)
                 return BadRequest("Data should be inputed");
+
+            if (categoryDto.ImageFile == null)
+                return BadRequest("Image file should be provided");
+
+            // Generate unique filename for the image
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + categoryDto.ImageFile.FileName;
+
+            // Define the folder path where images will be saved
+            string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+            // Save the image file to the server
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await categoryDto.ImageFile.CopyToAsync(stream);
+            }
 
             Category category = new Category
             {
                 Id = Guid.NewGuid(),
                 Name = categoryDto.Name,
-                Img = categoryDto.Img,
+                Img = uniqueFileName,
                 Description = categoryDto.Description,
             };
 
@@ -65,16 +81,31 @@ namespace final_project_be.Controllers
 
 
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] CategoryDTO categoryDto)
+        public async Task<IActionResult> Put(Guid id, [FromForm] CategoryDTO categoryDto)
         {
             if (categoryDto == null)
                 return BadRequest("Data should be inputed");
+
+            if (categoryDto.ImageFile == null)
+                return BadRequest("Image file should be provided");
+
+            // Generate unique filename for the image
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + categoryDto.ImageFile.FileName;
+
+            // Define the folder path where images will be saved
+            string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+            // Save the image file to the server
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await categoryDto.ImageFile.CopyToAsync(stream);
+            }
 
             Category category = new Category
             {
                 Id = Guid.NewGuid(),
                 Name = categoryDto.Name,
-                Img = categoryDto.Img,
+                Img = uniqueFileName,
                 Description = categoryDto.Description
             };
 

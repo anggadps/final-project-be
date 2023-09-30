@@ -59,8 +59,7 @@ namespace final_project_be.Controllers
                     Id_user = id,
                     Total_course = totalCourse,
                     Total_price = totalPrice,
-
-                    
+                    Pay_date = DateTime.Now,
 
                 };
 
@@ -113,6 +112,39 @@ namespace final_project_be.Controllers
             }*/
 
 
+        }
+
+
+        [HttpGet("ViewInvoice")]
+        public IActionResult ViewInvoice()
+        {
+            try
+            {
+                var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var cartList = _orderDataAccess.ViewInvoice(id);
+
+                return Ok(cartList);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet("ViewInvoiceDetail")]
+        public IActionResult ViewInvoiceDetail(Guid id)
+        {
+            try
+            {
+                var id_user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var invoiceDetailList = _orderDataAccess.ViewInvoiceDetail(id ,id_user);
+
+                return Ok(invoiceDetailList);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
     }
 }
