@@ -14,6 +14,47 @@ namespace final_project_be.DataAccess
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
+        public List<Payment> GetAll()
+        {
+            List<Payment> payments = new List<Payment>();
+            string query = $"SELECT * FROM payments";
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        command.Connection = connection;
+                        command.CommandText = query;
+                        connection.Open();
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Payment payment = new Payment
+                                {
+                                    Id = reader.GetGuid("Id"),
+                                    Name = reader.GetString("Name"),
+                                    Logo = reader.GetString("Logo"),
+                                    Is_active = reader.GetBoolean("Is_active")
+                                };
+                                payments.Add(payment);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+            return payments;
+        }
+
         public bool Insert(Payment payment)
         {
             bool result = false;

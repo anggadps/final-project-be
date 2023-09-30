@@ -119,7 +119,7 @@ namespace final_project_be.DataAccess
                 command.Connection = connection;
                 command.Parameters.Clear();
 
-                command.CommandText = "UPDATE Users SET is_active = 1 WHERE Id = @id";
+                command.CommandText = "UPDATE users SET is_active = 1 WHERE Id = @id";
                 command.Parameters.AddWithValue("@id", id);
 
                 try

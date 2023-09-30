@@ -17,6 +17,14 @@ namespace final_project_be.Controllers
             _paymentDataAccess = paymentDataAccess;
         }
 
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var payments = _paymentDataAccess.GetAll();
+            return Ok(payments);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] PaymentDTO paymentDTO)
         {
