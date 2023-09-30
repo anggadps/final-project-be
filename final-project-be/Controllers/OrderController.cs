@@ -14,10 +14,12 @@ namespace final_project_be.Controllers
     {
         private readonly OrderDataAccess _orderDataAccess;
         private readonly OrderDetailDataAccess _orderDetailDataAccess;
-        public OrderController(OrderDataAccess orderDataAccess, OrderDetailDataAccess orderDetailDataAccess)
+        private readonly CartDataAccess _cartDataAccess;
+        public OrderController(OrderDataAccess orderDataAccess, OrderDetailDataAccess orderDetailDataAccess, CartDataAccess cartDataAccess)
         {
             _orderDataAccess = orderDataAccess;
             _orderDetailDataAccess = orderDetailDataAccess;
+            _cartDataAccess = cartDataAccess;
         }
 
         private string GenerateInvoiceNumber()
@@ -80,7 +82,9 @@ namespace final_project_be.Controllers
                         Id_schedule = odto.Id_schedule,
                     };
 
+
                     bool result = _orderDetailDataAccess.Insert(orderDetail);
+
 
                     if (!result)
                     {
@@ -88,6 +92,15 @@ namespace final_project_be.Controllers
                         // _orderDataAccess.Delete(order.Id);
                         return StatusCode(500, "Internal server error");
                     }
+
+                    bool deleteCartResult = _cartDataAccess.DeleteCart(odto.Id_cart);
+
+                    if (!deleteCartResult)
+                    {
+                        // Handle jika gagal menghapus Cart
+                        return StatusCode(500, "Failed to remove item from cart.");
+                    }
+
                 }
                 return StatusCode(201, "Order and OrderDetails inserted successfully");
 
