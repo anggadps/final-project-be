@@ -150,7 +150,7 @@ namespace final_project_be.Controllers
                 {"email", user.Email }
             };
 
-            string callback = QueryHelpers.AddQueryString("https://localhost:7091/api/User/ActivateUser", param);
+            string callback = QueryHelpers.AddQueryString("http://localhost:3000/success-register", param);
 
             //string body = "Please confirm account by clicking this <a href=\"" + callback + "\"> Link</a>";
 
