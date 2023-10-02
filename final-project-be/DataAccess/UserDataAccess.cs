@@ -20,7 +20,9 @@ namespace final_project_be.DataAccess
         {
             List<User> users = new List<User>();
 
-            string query = "SELECT * FROM users";
+            string query = "SELECT users.id, users.id_user_level, users.name AS user_name, user_levels.name AS user_level  , users.email, users.password, users.is_active " +
+                "FROM users " +
+                "INNER JOIN user_levels ON users.id_user_level = user_levels.id;";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -37,9 +39,12 @@ namespace final_project_be.DataAccess
                                 users.Add(new User
                                 {
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Id_user_level = Guid.Parse(reader["Id_user_level"].ToString() ?? string.Empty),
+                                    Name = reader["User_name"].ToString() ?? string.Empty,
+                                    User_level = reader["user_level"].ToString() ?? string.Empty,
                                     Email = reader["Email"].ToString() ?? string.Empty,
                                     Password = reader["Password"].ToString() ?? string.Empty,
+                                    Is_active = reader.GetBoolean("Is_active")
                                 });
                             }
                         }
@@ -168,7 +173,7 @@ namespace final_project_be.DataAccess
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Email = reader["Email"].ToString() ?? string.Empty,
                                     Password = reader["Password"].ToString() ?? string.Empty,
-                                    Is_active = Convert.ToInt32(reader["Is_active"]),
+                                    Is_active = reader.GetBoolean("Is_active")
                                 };
                             }
                         }
@@ -263,7 +268,7 @@ namespace final_project_be.DataAccess
         {
             bool result = false;
 
-            string query = "UPDATE users SET Name = @Name, Email = @Email, Password = @Password, Id_user_level = @Id_user_level WHERE Id = @Id";
+            string query = "UPDATE users SET Name = @Name, Email = @Email, Password = @Password, Id_user_level = @Id_user_level, Is_active = @Is_active WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -280,6 +285,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@Email", user.Email);
                         command.Parameters.AddWithValue("@Password", user.Password);
                         command.Parameters.AddWithValue("@Id_user_level", user.Id_user_level);
+                        command.Parameters.AddWithValue("@Is_active", user.Is_active);
                         connection.Open();
 
                         result = command.ExecuteNonQuery() > 0 ? true : false;

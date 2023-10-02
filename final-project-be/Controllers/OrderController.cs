@@ -162,6 +162,28 @@ namespace final_project_be.Controllers
         }
 
 
+        [HttpGet("ViewInvoiceAdmin")]
+        public IActionResult ViewInvoiceAdmin()
+        {
+            var invoices = _orderDataAccess.ViewInvoiceAdmin();
+            return Ok(invoices);
+        }
+
+        [HttpGet("ViewInvoiceDetailAdmin")]
+        public IActionResult ViewInvoiceDetailAdmin(Guid id)
+        {
+            List<Order>? order = _orderDataAccess.ViewInvoiceDetailAdmin(id);
+
+            if (order == null)
+            {
+                return NotFound("Data not found");
+            }
+
+            return Ok(order);
+        }
+
+
+
         [HttpGet("ViewMyClass")]
         public IActionResult GetCartByIdUser()
         {

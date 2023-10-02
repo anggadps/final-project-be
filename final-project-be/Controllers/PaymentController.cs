@@ -92,7 +92,7 @@ namespace final_project_be.Controllers
                 Id = id,
                 Name = paymentDTO.Name,
                 Logo = uniqueFileName,
-                Is_active = true,
+                Is_active = paymentDTO.Is_active,
 
             };
 

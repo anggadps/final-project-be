@@ -19,7 +19,7 @@ namespace final_project_be.DataAccess
         {
             List<Course> courses = new List<Course>();
 
-            string query = "SELECT courses.id, courses.id_category, courses.name, courses.price, courses.img, categories.name AS category_name, courses.description " +
+            string query = "SELECT courses.id, courses.id_category, courses.name, courses.price, courses.img, categories.name AS category_name, courses.description, courses.is_active " +
                 "FROM courses " +
                 "INNER JOIN categories " +
                 "ON courses.id_category = categories.id";
@@ -45,7 +45,8 @@ namespace final_project_be.DataAccess
                                     Category_name = reader["category_name"].ToString() ?? string.Empty,
                                     Img = reader["img"].ToString() ?? string.Empty,
                                     Description = reader["description"].ToString() ?? string.Empty,
-                                    
+                                    Is_active = reader.GetBoolean("Is_active")
+
                                 });
                             }
                         }
@@ -223,7 +224,7 @@ namespace final_project_be.DataAccess
         public bool Insert(Course course)
         {
             bool result = false;
-            string query = $"INSERT INTO courses (Id, Name, Price, id_category, Img, Description) VALUES (@id, @name, @price, @id_category, @img, @description)";
+            string query = $"INSERT INTO courses (Id, Name, Price, id_category, Img, Description, Is_active) VALUES (@id, @name, @price, @id_category, @img, @description, @is_active)";
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -239,6 +240,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@id_category", course.id_category);
                         command.Parameters.AddWithValue("@img", course.Img);
                         command.Parameters.AddWithValue("@description", course.Description);
+                        command.Parameters.AddWithValue("@is_active", course.Is_active);
 
                         connection.Open();
                         result = command.ExecuteNonQuery() > 0 ? true : false;
@@ -260,7 +262,7 @@ namespace final_project_be.DataAccess
         public bool Update(Guid id, Course course)
         {
             bool result = false;
-            string query = $"UPDATE courses SET Name = @name, Price = @price, id_category = @id_category, Img = @img WHERE Id = @id";
+            string query = $"UPDATE courses SET Name = @name, Price = @price, id_category = @id_category, Img = @img, Description = @description, Is_active = @is_active WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -276,6 +278,8 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@price", course.Price);
                         command.Parameters.AddWithValue("@id_category", course.id_category);
                         command.Parameters.AddWithValue("@img", course.Img);
+                        command.Parameters.AddWithValue("@description", course.Description);
+                        command.Parameters.AddWithValue("@is_active", course.Is_active);
 
 
 

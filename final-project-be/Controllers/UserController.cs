@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.WebUtilities;
 using final_project_be.Emails;
 using final_project_be.Email.Template;
+using final_project_be.DTOs.Category;
 
 namespace final_project_be.Controllers
 {
@@ -33,7 +34,7 @@ namespace final_project_be.Controllers
         }
 
         // get all user
-        [Authorize(Roles = "user")]
+        // [Authorize(Roles = "admin")]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -73,7 +74,7 @@ namespace final_project_be.Controllers
                 if (user == null)
                     return BadRequest("Activation Failed");
 
-                if (user.Is_active == 1)
+                if (user.Is_active == true)
                     return BadRequest("Account has been activated");
 
                 bool result = _userDataAccess.ActivatedUser(userId);
@@ -107,7 +108,7 @@ namespace final_project_be.Controllers
                     Email = userDTO.Email,
                     Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password),
                     Id_user_level = defaultUserLevelId,
-                    Is_active = 0,
+                    Is_active = false,
 
                 };
 
@@ -129,6 +130,39 @@ namespace final_project_be.Controllers
             }
 
         }
+
+
+
+        [HttpPost("CreateUserByAdmin")]
+
+        public async Task<IActionResult> CreateUserByAdmin([FromBody] UserDTO userDTO)
+        {
+            if (userDTO == null)
+                return BadRequest("Data should be inputed");
+
+
+            User user = new User
+            {
+                Id = Guid.NewGuid(),
+                Id_user_level = userDTO.Id_user_level, 
+                Name = userDTO.Name,
+                Email = userDTO.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password),
+                Is_active = true
+            };
+
+            bool result = _userDataAccess.CreateUserAccount(user);
+
+            if (result)
+            {
+                return StatusCode(201, user.Id);
+            }
+            else
+            {
+                return StatusCode(500, "Error occur");
+            }
+        }
+
 
         // send email for activation user
         private async Task<bool> SendMailActivation(User user)
@@ -272,7 +306,7 @@ namespace final_project_be.Controllers
             if (user == null)
                 return BadRequest("Email or Password is incorrectttt");
 
-            if (user.Is_active == 0)
+            if (user.Is_active == false)
             {
                 return Unauthorized("Your Account has not ACTIVATED");
             }
@@ -324,9 +358,8 @@ namespace final_project_be.Controllers
 
 
         // update user
-        [Authorize(Roles = "admin")]
-        [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] UserDTO userDto)
+        [HttpPut("EditUserByAdmin")]
+        public IActionResult Put(Guid id, [FromForm] UserDTO userDto)
         {
             if (userDto == null)
                 return BadRequest("Data should be inputed");
@@ -334,9 +367,11 @@ namespace final_project_be.Controllers
             User user = new User
             {
                 Id = Guid.NewGuid(),
+                Id_user_level = userDto.Id_user_level,
                 Name = userDto.Name,
                 Email = userDto.Email,
-                Password = userDto.Password,
+                Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
+                Is_active = userDto.Is_active
             };
 
             bool result = _userDataAccess.Update(id, user);

@@ -45,6 +45,7 @@ builder.Services.AddSwaggerGen(option =>
 
 builder.Services.AddScoped<CategoryDataAccess>();
 builder.Services.AddScoped<CourseDataAccess>();
+builder.Services.AddScoped<UserLevelDataAccess>();
 builder.Services.AddScoped<UserDataAccess>();
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<OrderDataAccess>();

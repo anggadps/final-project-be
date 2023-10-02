@@ -6,5 +6,7 @@
         public string? Logo { get; set; }
         public IFormFile? ImageFile { get; set; }
 
+        public Boolean Is_active { get; set; }
+
     }
 }

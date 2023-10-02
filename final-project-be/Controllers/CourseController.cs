@@ -99,6 +99,7 @@ namespace final_project_be.Controllers
                 id_category = courseDto.id_category,
                 Img = uniqueFileName,
                 Description = courseDto.Description,
+                Is_active = true
             };
 
             bool result = _courseDataAccess.Insert(course);
@@ -142,7 +143,9 @@ namespace final_project_be.Controllers
                 Name = courseDTO.Name,
                 Price = courseDTO.Price,
                 id_category = courseDTO.id_category,
-                Img = uniqueFileName
+                Img = uniqueFileName,
+                Description = courseDTO.Description,
+                Is_active = courseDTO.Is_active,
             };
 
             bool result = _courseDataAccess.Update(id, course);

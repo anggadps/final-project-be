@@ -12,6 +12,7 @@ namespace final_project_be.Models
         public string ImagePath { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
+        public Boolean Is_active { get; set; }
 
     }
 }

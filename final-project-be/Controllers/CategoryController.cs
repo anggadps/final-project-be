@@ -65,6 +65,7 @@ namespace final_project_be.Controllers
                 Name = categoryDto.Name,
                 Img = uniqueFileName,
                 Description = categoryDto.Description,
+                Is_active = true,
             };
 
             bool result = _categoryDataAccess.Insert(category);
@@ -106,7 +107,8 @@ namespace final_project_be.Controllers
                 Id = Guid.NewGuid(),
                 Name = categoryDto.Name,
                 Img = uniqueFileName,
-                Description = categoryDto.Description
+                Description = categoryDto.Description,
+                Is_active = categoryDto.Is_active,
             };
 
             bool result = _categoryDataAccess.Update(id, category);

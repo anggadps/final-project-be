@@ -103,6 +103,54 @@ namespace final_project_be.DataAccess
         }
 
 
+
+        public List<Order> ViewInvoiceAdmin()
+        {
+            List<Order> orders = new List<Order>();
+
+            string query = $"SELECT * FROM orders";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Order order = new Order
+                                {
+                                    Id = Guid.Parse(reader["id"].ToString() ?? string.Empty),
+                                    No_invoice = reader["no_invoice"].ToString() ?? string.Empty,
+                                    Id_user = reader["id_user"].ToString() ?? string.Empty,
+                                    Total_course = decimal.Parse(reader["total_course"].ToString() ?? "0"),
+                                    Total_price = decimal.Parse(reader["total_price"].ToString() ?? "0"),
+                                    Pay_date = DateTime.Parse(reader["pay_date"].ToString() ?? string.Empty),
+                                };
+
+                                orders.Add(order);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return orders;
+        }
+
+
         public List<Order> ViewInvoiceDetail(Guid id, string id_user)
         {
             List<Order> orders = new List<Order>();
@@ -162,6 +210,67 @@ namespace final_project_be.DataAccess
 
             return orders;
         }
+
+
+        public List<Order> ViewInvoiceDetailAdmin(Guid id)
+        {
+            List<Order> orders = new List<Order>();
+
+            string query = $"SELECT o.id, o.id_user, o.no_invoice, o.pay_date, o.total_course , o.total_price, c.name AS course_name, cat.name AS category_name, s.schedule_date, c.price , c.img " +
+                $"FROM orders AS o " +
+                $"INNER JOIN order_details AS od ON o.id = od.id_order " +
+                $"INNER JOIN courses AS c ON od.id_course = c.id " +
+                $"INNER JOIN categories AS cat ON c.id_category = cat.id " +
+                $"INNER JOIN schedules AS s ON od.id_schedule = s.id " +
+                $"WHERE o.id = @id";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@id", id);
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Order order = new Order
+                                {
+                                    Id = Guid.Parse(reader["id"].ToString() ?? string.Empty),
+                                    No_invoice = reader["no_invoice"].ToString() ?? string.Empty,
+                                    Id_user = reader["id_user"].ToString() ?? string.Empty,
+                                    Course_name = reader["course_name"].ToString() ?? string.Empty,
+                                    Category_name = reader["category_name"].ToString() ?? string.Empty,
+                                    Schedule_date = DateTime.Parse(reader["schedule_date"].ToString() ?? string.Empty),
+                                    Price = Decimal.Parse(reader["price"].ToString() ?? string.Empty),
+                                    Total_course = decimal.Parse(reader["total_course"].ToString() ?? "0"),
+                                    Total_price = decimal.Parse(reader["total_price"].ToString() ?? "0"),
+                                    Pay_date = DateTime.Parse(reader["pay_date"].ToString() ?? string.Empty),
+                                    Img = reader["img"].ToString() ?? string.Empty,
+                                };
+
+                                orders.Add(order);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return orders;
+        }
+
 
         public List<Order> ViewMyClass(string id)
         {
