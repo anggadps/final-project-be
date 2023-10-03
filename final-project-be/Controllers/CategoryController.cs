@@ -24,6 +24,13 @@ namespace final_project_be.Controllers
             return Ok(categories);
         }
 
+        [HttpGet("GetAllByAdmin")]
+        public IActionResult GetAllByAdmin()
+        {
+            var categories = _categoryDataAccess.GetAllByAdmin();
+            return Ok(categories);
+        }
+
         [HttpGet("GetById")]
         public IActionResult Get(Guid id)
         {

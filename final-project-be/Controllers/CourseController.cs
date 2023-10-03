@@ -24,6 +24,14 @@ namespace final_project_be.Controllers
             return Ok(courses);
         }
 
+
+        [HttpGet("GetAllByAdmin")]
+        public IActionResult GetAllByAdmin()
+        {
+            var courses = _courseDataAccess.GetAllByAdmin();
+            return Ok(courses);
+        }
+
         // get by id_category
         [HttpGet("GetByIdCategory")]
         public IActionResult GetByIdCategory(Guid id)

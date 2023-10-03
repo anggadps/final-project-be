@@ -25,6 +25,13 @@ namespace final_project_be.Controllers
             return Ok(payments);
         }
 
+        [HttpGet("GetAllByAdmin")]
+        public IActionResult GetAllByAdmin()
+        {
+            var payments = _paymentDataAccess.GetAll();
+            return Ok(payments);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] PaymentDTO paymentDTO)
         {

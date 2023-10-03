@@ -22,7 +22,62 @@ namespace final_project_be.DataAccess
             string query = "SELECT courses.id, courses.id_category, courses.name, courses.price, courses.img, categories.name AS category_name, courses.description, courses.is_active " +
                 "FROM courses " +
                 "INNER JOIN categories " +
-                "ON courses.id_category = categories.id";
+                "ON courses.id_category = categories.id WHERE courses.is_active = true ";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                courses.Add(new Course
+                                {
+                                    Id = Guid.Parse(reader["id"].ToString() ?? string.Empty),
+                                    Name = reader["name"].ToString() ?? string.Empty,
+                                    Price = int.Parse(reader["price"].ToString() ?? string.Empty),
+                                    id_category = reader["id_category"].ToString() ?? string.Empty,
+                                    Category_name = reader["category_name"].ToString() ?? string.Empty,
+                                    Img = reader["img"].ToString() ?? string.Empty,
+                                    Description = reader["description"].ToString() ?? string.Empty,
+                                    Is_active = reader.GetBoolean("Is_active")
+
+                                });
+                            }
+                        }
+
+
+
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return courses;
+        }
+
+
+        // get all
+        public List<Course> GetAllByAdmin()
+        {
+            List<Course> courses = new List<Course>();
+
+            string query = "SELECT courses.id, courses.id_category, courses.name, courses.price, courses.img, categories.name AS category_name, courses.description, courses.is_active " +
+                "FROM courses " +
+                "INNER JOIN categories " +
+                "ON courses.id_category = categories.id ";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
