@@ -282,7 +282,7 @@ namespace final_project_be.DataAccess
                 $"INNER JOIN courses AS c ON od.id_course = c.id " +
                 $"INNER JOIN categories AS cat ON c.id_category = cat.id " +
                 $"INNER JOIN schedules AS s ON od.id_schedule = s.id " +
-                $"WHERE o.id_user = @id";
+                $"WHERE o.id_user = @id ORDER BY s.schedule_date ASC";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
