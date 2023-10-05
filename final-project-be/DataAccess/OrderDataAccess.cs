@@ -58,7 +58,7 @@ namespace final_project_be.DataAccess
         {
             List<Order> orders = new List<Order>();
 
-            string query = $"SELECT * FROM orders WHERE id_user = @id";
+            string query = $"SELECT * FROM orders WHERE id_user = @id ORDER BY pay_date DESC";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
