@@ -28,7 +28,7 @@ namespace final_project_be.Controllers
         [HttpGet("GetAllByAdmin")]
         public IActionResult GetAllByAdmin()
         {
-            var payments = _paymentDataAccess.GetAll();
+            var payments = _paymentDataAccess.GetAllByAdmin();
             return Ok(payments);
         }
 
@@ -100,7 +100,6 @@ namespace final_project_be.Controllers
                 Name = paymentDTO.Name,
                 Logo = uniqueFileName,
                 Is_active = paymentDTO.Is_active,
-
             };
 
             bool result = _paymentDataAccess.Update(id, payment);

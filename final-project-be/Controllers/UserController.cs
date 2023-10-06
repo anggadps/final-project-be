@@ -186,6 +186,8 @@ namespace final_project_be.Controllers
 
             string callback = QueryHelpers.AddQueryString("http://localhost:3000/success-register", param);
 
+            //string callback = QueryHelpers.AddQueryString("http://52.237.194.35:2033/success-register", param);
+
             //string body = "Please confirm account by clicking this <a href=\"" + callback + "\"> Link</a>";
 
             string body = _emailService.GetMailTemplate("EmailActivation", new ActivationModel()
