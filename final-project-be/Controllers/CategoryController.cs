@@ -94,20 +94,32 @@ namespace final_project_be.Controllers
             if (categoryDto == null)
                 return BadRequest("Data should be inputed");
 
-            if (categoryDto.ImageFile == null)
-                return BadRequest("Image file should be provided");
+            /*if (categoryDto.ImageFile == null)
+                return BadRequest("Image file should be provided");*/
 
-            // Generate unique filename for the image
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + categoryDto.ImageFile.FileName;
+            Category getExistingCategoryData = _categoryDataAccess.GetById(id);
 
-            // Define the folder path where images will be saved
-            string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+            if(getExistingCategoryData == null)
+                return NotFound();
 
-            // Save the image file to the server
-            using (var stream = new FileStream(imagePath, FileMode.Create))
+            string uniqueFileName = getExistingCategoryData.Img;
+
+            if(categoryDto.ImageFile != null )
             {
-                await categoryDto.ImageFile.CopyToAsync(stream);
+                // Generate unique filename for the image
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + categoryDto.ImageFile.FileName;
+
+                // Define the folder path where images will be saved
+                string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+                // Save the image file to the server
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await categoryDto.ImageFile.CopyToAsync(stream);
+                }
+
             }
+            
 
             Category category = new Category
             {

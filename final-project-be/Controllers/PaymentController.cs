@@ -32,6 +32,19 @@ namespace final_project_be.Controllers
             return Ok(payments);
         }
 
+        [HttpGet("GetById")]
+        public IActionResult Get(Guid id)
+        {
+            Payment? payment = _paymentDataAccess.GetById(id);
+
+            if (payment == null)
+            {
+                return NotFound("Data not found");
+            }
+
+            return Ok(payment);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] PaymentDTO paymentDTO)
         {
@@ -79,19 +92,30 @@ namespace final_project_be.Controllers
             if (paymentDTO == null)
                 return BadRequest("Data should be inputed");
 
-            if (paymentDTO.ImageFile == null)
-                return BadRequest("Image file should be provided");
+            /*if (paymentDTO.ImageFile == null)
+                return BadRequest("Image file should be provided");*/
 
-            // Generate unique filename for the image
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + paymentDTO.ImageFile.FileName;
+            Payment getExistingPaymentData = _paymentDataAccess.GetById(id);
 
-            // Define the folder path where images will be saved
-            string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+            if (getExistingPaymentData == null)
+                return NotFound();
 
-            // Save the image file to the server
-            using (var stream = new FileStream(imagePath, FileMode.Create))
+            string uniqueFileName = getExistingPaymentData.Logo;
+
+            if (paymentDTO.ImageFile != null)
             {
-                await paymentDTO.ImageFile.CopyToAsync(stream);
+                // Generate unique filename for the image
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + paymentDTO.ImageFile.FileName;
+
+                // Define the folder path where images will be saved
+                string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+                // Save the image file to the server
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await paymentDTO.ImageFile.CopyToAsync(stream);
+                }
+
             }
 
             Payment payment = new Payment

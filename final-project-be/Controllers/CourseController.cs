@@ -130,20 +130,31 @@ namespace final_project_be.Controllers
             if (courseDTO == null)
                 return BadRequest("Data should be inputed");
 
-            if (courseDTO.ImageFile == null)
-                return BadRequest("Image file should be provided");
+            /*if (courseDTO.ImageFile == null)
+                return BadRequest("Image file should be provided");*/
 
-            // Generate unique filename for the image
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + courseDTO.ImageFile.FileName;
+            Course getExistingCourseData = _courseDataAccess.GetById(id);
 
-            // Define the folder path where images will be saved
-            string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+            if(getExistingCourseData == null)
+                return NotFound();
 
-            // Save the image file to the server
-            using (var stream = new FileStream(imagePath, FileMode.Create))
+            string uniqueFileName = getExistingCourseData.Img;
+
+            if(courseDTO.ImageFile != null)
             {
-                await courseDTO.ImageFile.CopyToAsync(stream);
+                // Generate unique filename for the image
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + courseDTO.ImageFile.FileName;
+
+                // Define the folder path where images will be saved
+                string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+                // Save the image file to the server
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await courseDTO.ImageFile.CopyToAsync(stream);
+                }
             }
+
 
             Course course = new Course
             {

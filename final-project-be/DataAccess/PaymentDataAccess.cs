@@ -14,6 +14,8 @@ namespace final_project_be.DataAccess
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
+
+
         public List<Payment> GetAll()
         {
             List<Payment> payments = new List<Payment>();
@@ -95,6 +97,59 @@ namespace final_project_be.DataAccess
                 }
             }
             return payments;
+        }
+
+
+
+        /*Get by ID*/
+        public Payment? GetById(Guid id)
+        {
+            Payment? payment = null;
+
+            string query = $"SELECT * FROM payments WHERE Id = @id";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        command.Connection = connection;
+                        command.Parameters.Clear();
+
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@id", id);
+
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                payment = new Payment
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Logo = reader["Logo"].ToString() ?? string.Empty,
+                                    Is_active = reader.GetBoolean("Is_active")
+
+                                };
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return payment;
         }
 
         public bool Insert(Payment payment)
