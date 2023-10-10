@@ -22,7 +22,7 @@ namespace final_project_be.DataAccess
         {
             List<Category> categories = new List<Category>();
 
-            string query = "SELECT * FROM categories";
+            string query = "SELECT * FROM categories WHERE is_active = true ";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -41,7 +41,51 @@ namespace final_project_be.DataAccess
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Img = reader["Img"].ToString() ?? string.Empty,
-                                    Description = reader["Description"].ToString() ?? string.Empty
+                                    Description = reader["Description"].ToString() ?? string.Empty,
+                                    Is_active = reader.GetBoolean("Is_active")
+                                });
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return categories;
+        }
+
+        public List<Category> GetAllByAdmin()
+        {
+            List<Category> categories = new List<Category>();
+
+            string query = "SELECT * FROM categories ";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                categories.Add(new Category
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Img = reader["Img"].ToString() ?? string.Empty,
+                                    Description = reader["Description"].ToString() ?? string.Empty,
+                                    Is_active = reader.GetBoolean("Is_active")
                                 });
                             }
                         }
@@ -92,7 +136,9 @@ namespace final_project_be.DataAccess
                                     Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     Name = reader["Name"].ToString() ?? string.Empty,
                                     Img = reader["Img"].ToString() ?? string.Empty,
-                                    Description = reader["Description"].ToString() ?? string.Empty
+                                    Description = reader["Description"].ToString() ?? string.Empty,
+                                    Is_active = reader.GetBoolean("Is_active")
+
                                 };
                             }
                         }
@@ -116,8 +162,8 @@ namespace final_project_be.DataAccess
         {
             bool result = false;
 
-            string query = $"INSERT INTO categories(id, name, img, description) " +
-               $"VALUES (@id, @name, @img, @description)";
+            string query = $"INSERT INTO categories(id, name, img, description, is_active) " +
+               $"VALUES (@id, @name, @img, @description, @is_active)";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -133,6 +179,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@name", category.Name);
                         command.Parameters.AddWithValue("@img", category.Img);
                         command.Parameters.AddWithValue("@description", category.Description);
+                        command.Parameters.AddWithValue("@is_active", category.Is_active);
 
                         connection.Open();
 
@@ -159,7 +206,7 @@ namespace final_project_be.DataAccess
 
             
 
-            string query = $"UPDATE categories SET name = @name, img = @img, description = @description WHERE id = @id";
+            string query = $"UPDATE categories SET name = @name, img = @img, description = @description, is_active = @is_active WHERE id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
@@ -175,6 +222,7 @@ namespace final_project_be.DataAccess
                         command.Parameters.AddWithValue("@name", category.Name);
                         command.Parameters.AddWithValue("@img", category.Img);
                         command.Parameters.AddWithValue("@description", category.Description);
+                        command.Parameters.AddWithValue("@is_active", category.Is_active);
 
                         connection.Open();
 

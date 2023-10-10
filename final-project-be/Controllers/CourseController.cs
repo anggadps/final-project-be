@@ -2,6 +2,7 @@ using final_project_be.DataAccess;
 using final_project_be.Models;
 using final_project_be.DTOs.Course;
 using Microsoft.AspNetCore.Mvc;
+using final_project_be.DTOs.Payment;
 
 namespace final_project_be.Controllers
 {
@@ -20,6 +21,14 @@ namespace final_project_be.Controllers
         public IActionResult GetAll()
         {
             var courses = _courseDataAccess.GetAll();
+            return Ok(courses);
+        }
+
+
+        [HttpGet("GetAllByAdmin")]
+        public IActionResult GetAllByAdmin()
+        {
+            var courses = _courseDataAccess.GetAllByAdmin();
             return Ok(courses);
         }
 
@@ -98,6 +107,7 @@ namespace final_project_be.Controllers
                 id_category = courseDto.id_category,
                 Img = uniqueFileName,
                 Description = courseDto.Description,
+                Is_active = true
             };
 
             bool result = _courseDataAccess.Insert(course);
@@ -115,10 +125,36 @@ namespace final_project_be.Controllers
 
         // put
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] CourseDTO courseDTO)
+        public async Task<IActionResult>  Put(Guid id, [FromForm] CourseDTO courseDTO)
         {
             if (courseDTO == null)
                 return BadRequest("Data should be inputed");
+
+            /*if (courseDTO.ImageFile == null)
+                return BadRequest("Image file should be provided");*/
+
+            Course getExistingCourseData = _courseDataAccess.GetById(id);
+
+            if(getExistingCourseData == null)
+                return NotFound();
+
+            string uniqueFileName = getExistingCourseData.Img;
+
+            if(courseDTO.ImageFile != null)
+            {
+                // Generate unique filename for the image
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + courseDTO.ImageFile.FileName;
+
+                // Define the folder path where images will be saved
+                string imagePath = Path.Combine("wwwroot/images", uniqueFileName);
+
+                // Save the image file to the server
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await courseDTO.ImageFile.CopyToAsync(stream);
+                }
+            }
+
 
             Course course = new Course
             {
@@ -126,7 +162,9 @@ namespace final_project_be.Controllers
                 Name = courseDTO.Name,
                 Price = courseDTO.Price,
                 id_category = courseDTO.id_category,
-                Img = courseDTO.Img,
+                Img = uniqueFileName,
+                Description = courseDTO.Description,
+                Is_active = courseDTO.Is_active,
             };
 
             bool result = _courseDataAccess.Update(id, course);
