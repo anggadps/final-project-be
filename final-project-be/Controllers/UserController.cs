@@ -184,9 +184,9 @@ namespace final_project_be.Controllers
                 {"email", user.Email }
             };
 
-            string callback = QueryHelpers.AddQueryString("http://localhost:3000/success-register", param);
+            /*string callback = QueryHelpers.AddQueryString("http://localhost:3000/success-register", param);*/
 
-            //string callback = QueryHelpers.AddQueryString("http://52.237.194.35:2033/success-register", param);
+            string callback = QueryHelpers.AddQueryString("http://52.237.194.35:2033/success-register", param);
 
             //string body = "Please confirm account by clicking this <a href=\"" + callback + "\"> Link</a>";
 
@@ -246,7 +246,9 @@ namespace final_project_be.Controllers
                         {"email", email }
                     };
 
-            string callbackUrl = QueryHelpers.AddQueryString("http://localhost:3000/createpassword", param);
+            /*string callbackUrl = QueryHelpers.AddQueryString("http://localhost:3000/createpassword", param);*/
+
+            string callbackUrl = QueryHelpers.AddQueryString("http://52.237.194.35:2033/createpassword", param);
 
             string body = "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>";
 
