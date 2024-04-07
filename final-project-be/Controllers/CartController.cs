@@ -26,6 +26,13 @@ namespace final_project_be.Controllers
             {
                 var id_user = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+                Cart? existingCart = _cartDataAccess.CheckCart(id_user, cartDTO.Id_schedule);
+
+                if (existingCart != null)
+                {
+                    return BadRequest("Jadwal ini sudah ada di dalam keranjang Anda.");
+                }
+
                 Cart cart = new Cart
                 {
                     Id = Guid.NewGuid(),

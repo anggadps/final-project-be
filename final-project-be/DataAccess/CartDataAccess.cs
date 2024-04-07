@@ -55,6 +55,52 @@ namespace final_project_be.DataAccess
             return result;
         }
 
+        public Cart? CheckCart(string id_schedule, string id_user)
+        {
+            Cart? cart = null;
+
+            string query = "SELECT * FROM carts WHERE id_schedule = @id_schedule AND id_user = @id_user";
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    try
+                    {
+                        command.Parameters.AddWithValue("@id_schedule", id_schedule);
+                        command.Parameters.AddWithValue("@id_user", id_user);
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                cart = new Cart
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Id_user = reader["Name"].ToString() ?? string.Empty,
+                                    Id_schedule = reader["Name"].ToString() ?? string.Empty,
+                                    Id_course = reader["Email"].ToString() ?? string.Empty,
+                                };
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            return cart;
+        }
+
+
         public List<ViewCartDTO> GetViewCart(string id)
         {
             List<ViewCartDTO> carts = new List<ViewCartDTO>();
